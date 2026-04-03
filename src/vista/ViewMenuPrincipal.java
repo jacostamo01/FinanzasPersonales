@@ -42,6 +42,7 @@ public class ViewMenuPrincipal extends JFrame {
         // ingresos y gastos 
         JButton btnMovimientos = crearBoton(
             "Ingresos y Gastos (Movimientos)",
+            
             new Color(50, 150, 250)
         );
         btnMovimientos.addActionListener(e -> {
