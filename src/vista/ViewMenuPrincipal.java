@@ -82,8 +82,9 @@ public class ViewMenuPrincipal extends JFrame {
     private void crearBotonCerrarSesion() {
         JButton btnCerrarSesion = new JButton("Cerrar Sesión");
         btnCerrarSesion.setBackground(new Color(231, 76, 60));
-        btnCerrarSesion.setForeground(Color.WHITE);
+        btnCerrarSesion.setForeground (Color.WHITE);
         btnCerrarSesion.addActionListener(e -> {
+            
             dispose(); // Cierra el menú
             new ViewLogin().setVisible(true);
         });
