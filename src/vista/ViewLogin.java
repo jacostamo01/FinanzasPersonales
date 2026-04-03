@@ -69,10 +69,10 @@ public class ViewLogin extends JFrame {
                 return;
             }
 
-            // usuario quemado
-            Usuario admin = new Usuario("admin", "1234");
+            // Autenticar contra la base de datos
+            Usuario usuario = new Usuario(user, pass);
 
-            if (admin.autenticar(user, pass)) {
+            if (usuario.autenticar(user, pass)) {
                 dispose(); // Cierra la ventana de login
                 new ViewMenuPrincipal(user).setVisible(true);
             } else {
