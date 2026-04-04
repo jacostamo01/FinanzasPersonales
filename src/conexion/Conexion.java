@@ -11,9 +11,9 @@ import java.sql.SQLException;
 public class Conexion {
 
     // Datos de conexión a la base de datos
-    private static final String URL = "jdbc:mariadb://localhost:3306/finanzas_db";
+    private static final String URL = "jdbc:mariadb://localhost:3308/finanzas_db";
     private static final String USUARIO = "root";
-    private static final String PASSWORD = ""; // En XAMPP por defecto no tiene contraseña
+    private static final String PASSWORD = ""; // XAMPP por defecto no tiene contraseña
 
     /**
      * Crea y retorna una conexión a la base de datos.
