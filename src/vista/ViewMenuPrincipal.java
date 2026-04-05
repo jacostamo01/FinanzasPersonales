@@ -1,6 +1,9 @@
 package vista;
 
 import javax.swing.*;
+
+import Controller.EstadisticaController;
+
 import java.awt.*;
 
 /**
@@ -10,8 +13,12 @@ import java.awt.*;
  * estadísticas y reportes
  */
 public class ViewMenuPrincipal extends JFrame {
+    private String usuarioActual;
+    private EstadisticaController EstadisticaController;
 
     public ViewMenuPrincipal(String usuario) {
+        this.usuarioActual = usuario;
+        this.EstadisticaController = new EstadisticaController();
         configurarVentana();
         crearPanelBienvenida(usuario);
         crearBotonesModulos();
@@ -69,14 +76,14 @@ public class ViewMenuPrincipal extends JFrame {
             new Color(155, 89, 182)
         );
         btnEstadisticas.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this,
-                "Aquí irá el módulo de Estadísticas",
-                "Módulo Estadísticas", JOptionPane.INFORMATION_MESSAGE);
+          EstadisticaView view = new EstadisticaView();
+          view.setVisible(true);
         });
         panelCentral.add(btnEstadisticas);
-
         add(panelCentral, BorderLayout.CENTER);
     }
+
+    
 
     // boton cerrar sesion 
     private void crearBotonCerrarSesion() {
