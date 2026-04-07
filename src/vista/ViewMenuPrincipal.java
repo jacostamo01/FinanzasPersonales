@@ -1,5 +1,6 @@
 package vista;
 
+import controlador.MovimientoController;
 import javax.swing.*;
 
 import Controller.EstadisticaController;
@@ -15,10 +16,12 @@ import java.awt.*;
 public class ViewMenuPrincipal extends JFrame {
     private String usuarioActual;
     private EstadisticaController EstadisticaController;
+    private MovimientoController movimientoController;
 
     public ViewMenuPrincipal(String usuario) {
         this.usuarioActual = usuario;
         this.EstadisticaController = new EstadisticaController();
+        this.movimientoController = new MovimientoController();
         configurarVentana();
         crearPanelBienvenida(usuario);
         crearBotonesModulos();
@@ -41,20 +44,19 @@ public class ViewMenuPrincipal extends JFrame {
         add(lblBienvenida, BorderLayout.NORTH);
     }
 
-    // botones para entrar a cad amodulo
+    // botones para entrar a cada modulo
     private void crearBotonesModulos() {
         JPanel panelCentral = new JPanel(new GridLayout(3, 1, 10, 10));
         panelCentral.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
-        // ingresos y gastos 
+        // ingresos y gastos
         JButton btnMovimientos = crearBoton(
             "Ingresos y Gastos (Movimientos)",
             new Color(50, 150, 250)
         );
         btnMovimientos.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this,
-                "Aquí irá el módulo de Ingresos y Gastos",
-                "Módulo Movimientos", JOptionPane.INFORMATION_MESSAGE);
+            this.setVisible(false); // oculta el menu
+            new ViewMovimientos(usuarioActual, this, movimientoController).setVisible(true);
         });
         panelCentral.add(btnMovimientos);
 
@@ -85,7 +87,7 @@ public class ViewMenuPrincipal extends JFrame {
 
     
 
-    // boton cerrar sesion 
+    // boton cerrar sesion
     private void crearBotonCerrarSesion() {
         JButton btnCerrarSesion = new JButton("Cerrar Sesión");
         btnCerrarSesion.setBackground(new Color(231, 76, 60));
