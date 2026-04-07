@@ -4,6 +4,8 @@ import controlador.MovimientoController;
 import javax.swing.*;
 
 import Controller.EstadisticaController;
+import views.AhorroView;
+import views.InversionView;
 
 import java.awt.*;
 
@@ -66,9 +68,7 @@ public class ViewMenuPrincipal extends JFrame {
             new Color(46, 204, 113)
         );
         btnAhorros.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this,
-                "Aquí irá el módulo de Ahorros e Inversiones",
-                "Módulo Ahorros", JOptionPane.INFORMATION_MESSAGE);
+            new AhorroView().setVisible(true);
         });
         panelCentral.add(btnAhorros);
 

@@ -17,10 +17,10 @@ public class InversionController {
     }
 
     public double calcularGanancia(Inversion inversion) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return service.calcularGanancia(inversion);
     }
 
     public double calcularMontoTotal(Inversion inversion) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return service.calcularMontoTotal(inversion);
     }
 }
