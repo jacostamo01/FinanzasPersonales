@@ -7,48 +7,47 @@ import java.sql.SQLException;
 import conexion.Conexion;
 
 /**
- * autenticacion de usuario y contr
+ * Representa un usuario del sistema.
+ *
+ * Conceptos de POO usados:
+ * - ENCAPSULAMIENTO: atributos privados con getters
+ * - RESPONSABILIDAD: esta clase se encarga de autenticar al usuario contra la BD
  */
 public class Usuario {
 
+    // Atributos privados (ENCAPSULAMIENTO)
     private String username;
     private String password;
 
-    // constructor para usuario y contraseña
+    // Constructor - crea un usuario con nombre y contraseña
     public Usuario(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
     /**
-     * aqui verificamos si el usuario y contraseña son correctos o no
-     * Verifica si el usuario y contraseña ingresados son correctos
+     * Verifica si el usuario y contraseña existen en la base de datos.
+     * Usa PreparedStatement para evitar inyeccion SQL.
+     * Retorna true si las credenciales son correctas, false si no.
      */
     public boolean autenticar(String user, String pass) {
         String sql = "SELECT * FROM usuarios WHERE username = ? AND password = ?";
+        Connection conn = Conexion.obtenerConexion();
 
-        try (Connection conn = Conexion.obtenerConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        if (conn == null) {
+            System.out.println("No se pudo conectar a la base de datos.");
+            return false;
+        }
 
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user);
             stmt.setString(2, pass);
 
             ResultSet resultado = stmt.executeQuery();
             return resultado.next();
-
         } catch (SQLException e) {
             System.out.println("Error al autenticar: " + e.getMessage());
             return false;
         }
-    }
-
-    // Getters y Setters
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 }

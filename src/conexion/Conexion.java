@@ -5,19 +5,23 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Clase que maneja la conexión a la base de datos MariaDB.
+ * Clase encargada de la conexion a la base de datos MariaDB.
  * Usa XAMPP con la base de datos "finanzas_db".
+ *
+ * Conceptos de POO usados:
+ * - CONSTANTES (static final): los datos de conexion no cambian
+ * - METODO ESTATICO: se llama sin crear un objeto (Conexion.obtenerConexion())
  */
 public class Conexion {
 
-    // Datos de conexión a la base de datos
-    private static final String URL = "jdbc:mariadb://localhost:3308/finanzas_db";
+    // Constantes de conexion (no cambian en toda la ejecucion)
+    private static final String URL = "jdbc:mariadb://localhost:3306/finanzas_db";
     private static final String USUARIO = "root";
-    private static final String PASSWORD = ""; // XAMPP por defecto no tiene contraseña
+    private static final String PASSWORD = "";
 
     /**
-     * Crea y retorna una conexión a la base de datos.
-     * Retorna null si no se pudo conectar.
+     * Crea y retorna una conexion a la base de datos.
+     * Si no se puede conectar, retorna null.
      */
     public static Connection obtenerConexion() {
         try {
