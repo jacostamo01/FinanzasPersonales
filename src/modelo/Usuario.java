@@ -10,43 +10,63 @@ import conexion.Conexion;
  * Representa un usuario del sistema.
  *
  * Conceptos de POO usados:
- * - ENCAPSULAMIENTO: atributos privados con getters
- * - RESPONSABILIDAD: esta clase se encarga de autenticar al usuario contra la BD
+ * - ENCAPSULAMIENTO: atributos privados
+ * - METODOS ESTATICOS: autenticar y registrar no necesitan instancia
+ * - TRY-WITH-RESOURCES: cierra conexiones automaticamente
  */
 public class Usuario {
 
-    // Atributos privados (ENCAPSULAMIENTO)
-    private String username;
-    private String password;
+    /**
+     * Verifica si el usuario y contraseña existen en la base de datos.
+     * Usa try-with-resources para cerrar conexion automaticamente.
+     */
+    public static boolean autenticar(String user, String pass) {
+        String sql = "SELECT id FROM usuarios WHERE username = ? AND password = ?";
 
-    // Constructor - crea un usuario con nombre y contraseña
-    public Usuario(String username, String password) {
-        this.username = username;
-        this.password = password;
+        try (Connection conn = Conexion.obtenerConexion()) {
+            if (conn == null) return false;
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, user);
+                stmt.setString(2, pass);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    return rs.next();
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al autenticar: " + e.getMessage());
+            return false;
+        }
     }
 
     /**
-     * Verifica si el usuario y contraseña existen en la base de datos.
-     * Usa PreparedStatement para evitar inyeccion SQL.
-     * Retorna true si las credenciales son correctas, false si no.
+     * METODO ESTATICO - Registra un nuevo usuario en la base de datos.
+     * Verifica que el nombre de usuario no exista antes de insertarlo.
+     * Usa try-with-resources para cerrar todos los recursos.
      */
-    public boolean autenticar(String user, String pass) {
-        String sql = "SELECT * FROM usuarios WHERE username = ? AND password = ?";
-        Connection conn = Conexion.obtenerConexion();
+    public static boolean registrar(String user, String pass) {
+        try (Connection conn = Conexion.obtenerConexion()) {
+            if (conn == null) return false;
 
-        if (conn == null) {
-            System.out.println("No se pudo conectar a la base de datos.");
-            return false;
-        }
+            // Verificar que no exista
+            try (PreparedStatement check = conn.prepareStatement(
+                    "SELECT id FROM usuarios WHERE username = ?")) {
+                check.setString(1, user);
+                try (ResultSet rs = check.executeQuery()) {
+                    if (rs.next()) return false;
+                }
+            }
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user);
-            stmt.setString(2, pass);
-
-            ResultSet resultado = stmt.executeQuery();
-            return resultado.next();
+            // Insertar el nuevo usuario
+            try (PreparedStatement insert = conn.prepareStatement(
+                    "INSERT INTO usuarios (username, password) VALUES (?, ?)")) {
+                insert.setString(1, user);
+                insert.setString(2, pass);
+                insert.executeUpdate();
+                return true;
+            }
         } catch (SQLException e) {
-            System.out.println("Error al autenticar: " + e.getMessage());
+            System.out.println("Error al registrar: " + e.getMessage());
             return false;
         }
     }

@@ -4,28 +4,26 @@ import controlador.MovimientoController;
 import modelo.Movimiento;
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
  * Ventana para registrar ingresos y gastos.
- * Permite agregar, ver y borrar movimientos de la BD.
+ * Permite agregar y ver movimientos de la BD.
  *
  * Conceptos de POO usados:
  * - HERENCIA: extiende de JFrame
  * - COMPOSICION: recibe el controlador como parametro (no crea uno nuevo)
  * - POLIMORFISMO: muestra Ingresos y Gastos como Movimiento usando getTipo()
+ * - REUTILIZACION: usa EstiloApp para estilos unificados
  */
 public class ViewMovimientos extends JFrame {
 
     // Componentes de la interfaz (ENCAPSULAMIENTO)
     private JTextField txtMonto;
     private JTextField txtDescripcion;
+    private JTextField txtFecha;
     private JTextArea txtAreaLista;
-    private JButton btnIngreso;
-    private JButton btnGasto;
-    private JButton btnVer;
-    private JButton btnBorrar;
-    private JButton btnVolver;
 
     // Referencias a otros objetos (COMPOSICION)
     private MovimientoController controller;
@@ -35,169 +33,173 @@ public class ViewMovimientos extends JFrame {
     public ViewMovimientos(String usuario, ViewMenuPrincipal menu, MovimientoController controller) {
         this.menuPrincipal = menu;
         this.controller = controller;
-        configurarVentana();
-        crearComponentes();
-        agregarEventos();
-    }
 
-    private void configurarVentana() {
-        setTitle("Ingresos y Gastos");
-        setSize(450, 550);
+        EstiloApp.configurarVentana(this, "Ingresos y Gastos", 480, 520);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(null);
-        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+
+        add(EstiloApp.crearHeader("INGRESOS Y GASTOS"), BorderLayout.NORTH);
+        add(crearContenido(), BorderLayout.CENTER);
+        add(crearPanelInferior(), BorderLayout.SOUTH);
     }
 
-    private void crearComponentes() {
-        // Titulo
-        JLabel lblTitulo = new JLabel("Registrar Movimiento", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 16));
-        lblTitulo.setBounds(0, 10, 450, 30);
-        add(lblTitulo);
+    private JPanel crearContenido() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(EstiloApp.FONDO);
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
 
-        // Campo: Monto
-        JLabel lblMonto = new JLabel("Monto:");
-        lblMonto.setBounds(40, 60, 80, 25);
-        add(lblMonto);
+        // Formulario de campos
+        JPanel formulario = new JPanel(new GridBagLayout());
+        formulario.setBackground(EstiloApp.FONDO);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        txtMonto = new JTextField();
-        txtMonto.setBounds(130, 60, 150, 25);
-        add(txtMonto);
+        JLabel lblMonto = EstiloApp.crearLabel("Monto:");
+        gbc.gridx = 0; gbc.gridy = 0;
+        formulario.add(lblMonto, gbc);
+
+        txtMonto = new JTextField(15);
+        EstiloApp.aplicarEstiloCampo(txtMonto);
+        gbc.gridx = 1;
+        formulario.add(txtMonto, gbc);
 
         JLabel lblFormato = new JLabel("Ej: 1.500.000");
-        lblFormato.setFont(new Font("Arial", Font.ITALIC, 10));
-        lblFormato.setForeground(Color.GRAY);
-        lblFormato.setBounds(290, 62, 100, 20);
-        add(lblFormato);
+        lblFormato.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        lblFormato.setForeground(EstiloApp.TEXTO_SEC);
+        gbc.gridx = 2;
+        formulario.add(lblFormato, gbc);
 
-        // Campo: Descripcion
-        JLabel lblDescripcion = new JLabel("Descripcion:");
-        lblDescripcion.setBounds(40, 100, 90, 25);
-        add(lblDescripcion);
+        JLabel lblDesc = EstiloApp.crearLabel("Descripcion:");
+        gbc.gridx = 0; gbc.gridy = 1;
+        formulario.add(lblDesc, gbc);
 
-        txtDescripcion = new JTextField();
-        txtDescripcion.setBounds(130, 100, 150, 25);
-        add(txtDescripcion);
+        txtDescripcion = new JTextField(15);
+        EstiloApp.aplicarEstiloCampo(txtDescripcion);
+        gbc.gridx = 1;
+        formulario.add(txtDescripcion, gbc);
 
-        // Botones de accion
-        btnIngreso = new JButton("Agregar Ingreso");
-        btnIngreso.setBounds(40, 150, 150, 35);
-        btnIngreso.setBackground(new Color(50, 180, 50));
-        btnIngreso.setForeground(Color.WHITE);
-        add(btnIngreso);
+        JLabel lblFecha = EstiloApp.crearLabel("Fecha:");
+        gbc.gridx = 0; gbc.gridy = 2;
+        formulario.add(lblFecha, gbc);
 
-        btnGasto = new JButton("Agregar Gasto");
-        btnGasto.setBounds(220, 150, 150, 35);
-        btnGasto.setBackground(new Color(220, 60, 60));
-        btnGasto.setForeground(Color.WHITE);
-        add(btnGasto);
+        txtFecha = new JTextField(15);
+        EstiloApp.aplicarEstiloCampo(txtFecha);
+        txtFecha.setText(LocalDate.now().toString());
+        gbc.gridx = 1;
+        formulario.add(txtFecha, gbc);
 
-        btnVer = new JButton("Ver Movimientos");
-        btnVer.setBounds(130, 205, 170, 30);
-        add(btnVer);
+        JLabel lblFormatoFecha = new JLabel("AAAA-MM-DD");
+        lblFormatoFecha.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        lblFormatoFecha.setForeground(EstiloApp.TEXTO_SEC);
+        gbc.gridx = 2;
+        formulario.add(lblFormatoFecha, gbc);
 
-        // Area de texto para mostrar la lista de movimientos
-        txtAreaLista = new JTextArea();
+        panel.add(formulario);
+        panel.add(Box.createVerticalStrut(10));
+
+        // Botones agregar
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
+        panelBotones.setBackground(EstiloApp.FONDO);
+
+        JButton btnIngreso = EstiloApp.crearBoton("Agregar Ingreso", EstiloApp.EXITO);
+        btnIngreso.addActionListener(e -> agregarMovimiento("Ingreso"));
+
+        JButton btnGasto = EstiloApp.crearBoton("Agregar Gasto", EstiloApp.PELIGRO);
+        btnGasto.addActionListener(e -> agregarMovimiento("Gasto"));
+
+        panelBotones.add(btnIngreso);
+        panelBotones.add(btnGasto);
+        panel.add(panelBotones);
+        panel.add(Box.createVerticalStrut(10));
+
+        // Boton Ver Movimientos
+        JPanel panelVer = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panelVer.setBackground(EstiloApp.FONDO);
+        JButton btnVer = EstiloApp.crearBoton("Ver Movimientos", EstiloApp.PRIMARIO);
+        btnVer.addActionListener(e -> verMovimientos());
+        panelVer.add(btnVer);
+        panel.add(panelVer);
+        panel.add(Box.createVerticalStrut(10));
+
+        // Area de texto para lista de movimientos
+        txtAreaLista = new JTextArea(8, 30);
         txtAreaLista.setEditable(false);
+        EstiloApp.aplicarEstiloArea(txtAreaLista);
         JScrollPane scroll = new JScrollPane(txtAreaLista);
-        scroll.setBounds(30, 250, 390, 150);
-        add(scroll);
+        scroll.setBorder(BorderFactory.createLineBorder(EstiloApp.BORDE));
+        panel.add(scroll);
 
-        // Boton para borrar todos los registros
-        btnBorrar = new JButton("Borrar Registros");
-        btnBorrar.setBounds(130, 415, 170, 30);
-        btnBorrar.setBackground(new Color(200, 50, 50));
-        btnBorrar.setForeground(Color.WHITE);
-        add(btnBorrar);
-
-        // Boton para volver al menu principal
-        btnVolver = new JButton("Volver al Menu");
-        btnVolver.setBounds(130, 460, 170, 30);
-        btnVolver.setBackground(new Color(100, 100, 100));
-        btnVolver.setForeground(Color.WHITE);
-        add(btnVolver);
+        return panel;
     }
 
-    // Asigna las acciones a cada boton
-    private void agregarEventos() {
+    // Panel inferior con boton Volver
+    private JPanel crearPanelInferior() {
+        JPanel panel = new JPanel();
+        panel.setBackground(EstiloApp.FONDO);
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0));
 
-        // Boton Agregar Ingreso
-        btnIngreso.addActionListener(e -> {
-            double monto = parsearMonto(txtMonto.getText().trim());
-            String descripcion = txtDescripcion.getText().trim();
-            if (!validar(txtMonto.getText().trim(), descripcion, monto)) return;
-
-            if (controller.agregarIngreso(monto, descripcion)) {
-                JOptionPane.showMessageDialog(this, "Ingreso agregado correctamente.");
-                limpiarCampos();
-            } else {
-                JOptionPane.showMessageDialog(this,
-                    "Error: No se pudo guardar. Verifica que XAMPP este encendido.",
-                    "Error de conexion", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        // Boton Agregar Gasto
-        btnGasto.addActionListener(e -> {
-            double monto = parsearMonto(txtMonto.getText().trim());
-            String descripcion = txtDescripcion.getText().trim();
-            if (!validar(txtMonto.getText().trim(), descripcion, monto)) return;
-
-            if (controller.agregarGasto(monto, descripcion)) {
-                JOptionPane.showMessageDialog(this, "Gasto agregado correctamente.");
-                limpiarCampos();
-            } else {
-                JOptionPane.showMessageDialog(this,
-                    "Error: No se pudo guardar. Verifica que XAMPP este encendido.",
-                    "Error de conexion", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        // Boton Ver Movimientos - POLIMORFISMO: llama getTipo() que puede ser Ingreso o Gasto
-        btnVer.addActionListener(e -> {
-            ArrayList<Movimiento> lista = controller.listarMovimientos();
-            if (lista.isEmpty()) {
-                txtAreaLista.setText("No hay movimientos registrados.");
-                return;
-            }
-
-            String texto = "";
-            for (Movimiento m : lista) {
-                texto += m.getTipo() + " | $" + formatearNumero(m.getMonto())
-                        + " | " + m.getDescripcion() + "\n";
-            }
-            txtAreaLista.setText(texto);
-        });
-
-        // Boton Borrar Registros - pide confirmacion antes de eliminar
-        btnBorrar.addActionListener(e -> {
-            int opcion = JOptionPane.showConfirmDialog(this,
-                "Estas seguro? Se eliminaran TODOS los movimientos.",
-                "Confirmar borrado", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-
-            if (opcion == JOptionPane.YES_OPTION) {
-                if (controller.eliminarTodos()) {
-                    txtAreaLista.setText("");
-                    JOptionPane.showMessageDialog(this, "Todos los registros fueron eliminados.");
-                } else {
-                    JOptionPane.showMessageDialog(this,
-                        "Error al eliminar. Verifica que XAMPP este encendido.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        // Boton Volver - cierra esta ventana y muestra el menu
+        JButton btnVolver = EstiloApp.crearBoton("Volver al Menu", EstiloApp.GRIS);
         btnVolver.addActionListener(e -> {
             dispose();
             menuPrincipal.setVisible(true);
         });
+        panel.add(btnVolver);
+        return panel;
     }
 
-    /**
-     * Convierte el texto del monto a un numero double.
-     * Acepta formatos como: 1.500.000 o 1500000 o 1500.50
-     */
+    // Agrega un ingreso o gasto segun el tipo
+    private void agregarMovimiento(String tipo) {
+        double monto = parsearMonto(txtMonto.getText().trim());
+        String descripcion = txtDescripcion.getText().trim();
+        String fecha = txtFecha.getText().trim();
+        if (!validar(txtMonto.getText().trim(), descripcion, monto)) return;
+
+        if (!fecha.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            JOptionPane.showMessageDialog(this,
+                "La fecha debe tener formato AAAA-MM-DD.\nEjemplo: 2026-04-12",
+                "Fecha invalida", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        boolean exito;
+        if (tipo.equals("Ingreso")) {
+            exito = controller.agregarIngreso(monto, descripcion, fecha);
+        } else {
+            exito = controller.agregarGasto(monto, descripcion, fecha);
+        }
+
+        if (exito) {
+            JOptionPane.showMessageDialog(this, tipo + " agregado correctamente.");
+            txtMonto.setText("");
+            txtDescripcion.setText("");
+            txtFecha.setText(LocalDate.now().toString());
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "Error: No se pudo guardar. Verifica que XAMPP este encendido.",
+                "Error de conexion", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // POLIMORFISMO: llama getTipo() que puede ser "Ingreso" o "Gasto"
+    private void verMovimientos() {
+        ArrayList<Movimiento> lista = controller.listarMovimientos();
+        if (lista.isEmpty()) {
+            txtAreaLista.setText("No hay movimientos registrados.");
+            return;
+        }
+
+        StringBuilder texto = new StringBuilder();
+        for (Movimiento m : lista) {
+            texto.append(m.getTipo()).append(" | $")
+                 .append(formatearNumero(m.getMonto()))
+                 .append(" | ").append(m.getDescripcion()).append("\n");
+        }
+        txtAreaLista.setText(texto.toString());
+    }
+
+    // Convierte texto con formato de miles a numero (ej: 1.500.000 -> 1500000)
     private double parsearMonto(String texto) {
         try {
             long cantidadPuntos = texto.chars().filter(c -> c == '.').count();
@@ -213,21 +215,21 @@ public class ViewMovimientos extends JFrame {
         }
     }
 
-    // Formatea un numero con puntos de miles para mostrarlo bonito
+    // Formatea un numero con separadores de miles
     private String formatearNumero(double numero) {
         long entero = (long) numero;
         String texto = String.valueOf(entero);
-        String resultado = "";
+        StringBuilder resultado = new StringBuilder();
         int contador = 0;
 
         for (int i = texto.length() - 1; i >= 0; i--) {
             if (contador > 0 && contador % 3 == 0) {
-                resultado = "." + resultado;
+                resultado.insert(0, ".");
             }
-            resultado = texto.charAt(i) + resultado;
+            resultado.insert(0, texto.charAt(i));
             contador++;
         }
-        return resultado;
+        return resultado.toString();
     }
 
     // Valida que los campos no esten vacios y que el monto sea valido
@@ -245,11 +247,5 @@ public class ViewMovimientos extends JFrame {
             return false;
         }
         return true;
-    }
-
-    // Limpia los campos de texto despues de agregar un movimiento
-    private void limpiarCampos() {
-        txtMonto.setText("");
-        txtDescripcion.setText("");
     }
 }

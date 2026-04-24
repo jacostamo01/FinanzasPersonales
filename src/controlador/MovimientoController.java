@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 /**
  * CONTROLADOR del modulo de movimientos (ingresos y gastos).
- * Es el intermediario entre la Vista y el Servicio.
  *
  * Patron MVC (Modelo-Vista-Controlador):
  * - La Vista (ViewMovimientos) llama al Controlador
@@ -23,13 +22,13 @@ public class MovimientoController {
     }
 
     // Agrega un ingreso (retorna true si se guardo en BD)
-    public boolean agregarIngreso(double monto, String descripcion) {
-        return servicio.agregarIngreso(monto, descripcion);
+    public boolean agregarIngreso(double monto, String descripcion, String fecha) {
+        return servicio.agregarIngreso(monto, descripcion, fecha);
     }
 
     // Agrega un gasto (retorna true si se guardo en BD)
-    public boolean agregarGasto(double monto, String descripcion) {
-        return servicio.agregarGasto(monto, descripcion);
+    public boolean agregarGasto(double monto, String descripcion, String fecha) {
+        return servicio.agregarGasto(monto, descripcion, fecha);
     }
 
     // Lista todos los movimientos desde la BD
@@ -37,8 +36,13 @@ public class MovimientoController {
         return servicio.listarMovimientos();
     }
 
-    // Elimina todos los registros de la BD
-    public boolean eliminarTodos() {
-        return servicio.eliminarTodos();
+    // Agrupa movimientos por mes (NO CRUD: solo consulta)
+    public ArrayList<Object[]> listarPorMes() {
+        return servicio.listarPorMes();
+    }
+
+    // Lista movimientos detallados de un mes especifico
+    public ArrayList<Movimiento> listarMovimientosPorMes(String periodo) {
+        return servicio.listarMovimientosPorMes(periodo);
     }
 }

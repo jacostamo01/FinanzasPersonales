@@ -13,111 +13,95 @@ import java.awt.*;
  * - HERENCIA: extiende de JFrame
  * - COMPOSICION: recibe un objeto Ahorro compartido con InversionView
  * - ENCAPSULAMIENTO: los componentes son privados
+ * - REUTILIZACION: usa EstiloApp para estilos unificados
  */
 public class AhorroView extends JFrame {
 
     // Atributos privados (ENCAPSULAMIENTO)
     private AhorroController controller;
     private Ahorro ahorro;
-
-    // Componentes de la interfaz
     private JTextField txtMonto;
     private JLabel lblDisponible;
     private JLabel lblAhorrado;
-    private JButton btnDepositar;
-    private JButton btnRetirar;
 
     // Constructor - recibe el objeto Ahorro compartido desde el menu
     public AhorroView(Ahorro ahorro) {
         this.controller = new AhorroController();
         this.ahorro = ahorro;
-        configurarVentana();
-        crearComponentes();
+
+        EstiloApp.configurarVentana(this, "Ahorros", 450, 360);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        add(EstiloApp.crearHeader("MODULO DE AHORROS"), BorderLayout.NORTH);
+        add(crearContenido(), BorderLayout.CENTER);
         actualizarSaldos();
     }
 
-    private void configurarVentana() {
-        setTitle("Ahorros");
-        setSize(420, 320);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setLayout(null);
-    }
+    private JPanel crearContenido() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(EstiloApp.FONDO);
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
 
-    private void crearComponentes() {
-        // Titulo
-        JLabel lblTitulo = new JLabel("Modulo de Ahorros", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 16));
-        lblTitulo.setBounds(0, 10, 420, 25);
-        add(lblTitulo);
+        // Panel de informacion de saldos
+        JPanel panelInfo = new JPanel(new GridLayout(2, 2, 10, 8));
+        panelInfo.setBackground(EstiloApp.TARJETA);
+        panelInfo.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(EstiloApp.BORDE),
+            BorderFactory.createEmptyBorder(12, 15, 12, 15)));
 
-        // Label: Dinero disponible (calculado desde la BD)
-        JLabel lblDispTitulo = new JLabel("Dinero disponible (Ingresos - Gastos):");
-        lblDispTitulo.setBounds(30, 50, 250, 20);
-        add(lblDispTitulo);
+        JLabel lblDispTitulo = EstiloApp.crearLabel("Disponible (Ingresos - Gastos):");
+        panelInfo.add(lblDispTitulo);
 
         lblDisponible = new JLabel("$0");
-        lblDisponible.setFont(new Font("Arial", Font.BOLD, 16));
-        lblDisponible.setForeground(new Color(46, 204, 113));
-        lblDisponible.setBounds(280, 45, 130, 25);
-        add(lblDisponible);
+        lblDisponible.setFont(EstiloApp.FUENTE_SUBTITULO);
+        lblDisponible.setForeground(EstiloApp.EXITO);
+        panelInfo.add(lblDisponible);
 
-        // Label: Total ahorrado
-        JLabel lblAhoTitulo = new JLabel("Total ahorrado:");
-        lblAhoTitulo.setBounds(30, 80, 250, 20);
-        add(lblAhoTitulo);
+        JLabel lblAhoTitulo = EstiloApp.crearLabel("Total ahorrado:");
+        panelInfo.add(lblAhoTitulo);
 
         lblAhorrado = new JLabel("$0");
-        lblAhorrado.setFont(new Font("Arial", Font.BOLD, 16));
-        lblAhorrado.setForeground(new Color(52, 152, 219));
-        lblAhorrado.setBounds(280, 75, 130, 25);
-        add(lblAhorrado);
+        lblAhorrado.setFont(EstiloApp.FUENTE_SUBTITULO);
+        lblAhorrado.setForeground(EstiloApp.PRIMARIO);
+        panelInfo.add(lblAhorrado);
 
-        // Separador visual
-        JSeparator sep = new JSeparator();
-        sep.setBounds(30, 115, 350, 2);
-        add(sep);
+        panel.add(panelInfo);
+        panel.add(Box.createVerticalStrut(15));
 
-        // Campo: Monto a ahorrar o retirar
-        JLabel lblMonto = new JLabel("Monto:");
-        lblMonto.setBounds(30, 135, 80, 25);
-        add(lblMonto);
+        // Campo monto
+        JPanel panelMonto = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        panelMonto.setBackground(EstiloApp.FONDO);
+        JLabel lblMonto = EstiloApp.crearLabel("Monto:");
+        txtMonto = new JTextField(12);
+        EstiloApp.aplicarEstiloCampo(txtMonto);
+        panelMonto.add(lblMonto);
+        panelMonto.add(txtMonto);
+        panel.add(panelMonto);
+        panel.add(Box.createVerticalStrut(15));
 
-        txtMonto = new JTextField();
-        txtMonto.setBounds(110, 135, 160, 25);
-        add(txtMonto);
+        // Botones
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        panelBotones.setBackground(EstiloApp.FONDO);
 
-        // Boton Ahorrar
-        btnDepositar = new JButton("Ahorrar");
-        btnDepositar.setBounds(50, 185, 140, 35);
-        btnDepositar.setBackground(new Color(46, 204, 113));
-        btnDepositar.setForeground(Color.WHITE);
+        JButton btnDepositar = EstiloApp.crearBoton("Ahorrar", EstiloApp.EXITO);
         btnDepositar.addActionListener(e -> depositar());
-        add(btnDepositar);
 
-        // Boton Retirar
-        btnRetirar = new JButton("Retirar");
-        btnRetirar.setBounds(220, 185, 140, 35);
-        btnRetirar.setBackground(new Color(231, 76, 60));
-        btnRetirar.setForeground(Color.WHITE);
+        JButton btnRetirar = EstiloApp.crearBoton("Retirar", EstiloApp.PELIGRO);
         btnRetirar.addActionListener(e -> retirar());
-        add(btnRetirar);
+
+        panelBotones.add(btnDepositar);
+        panelBotones.add(btnRetirar);
+        panel.add(panelBotones);
+
+        return panel;
     }
 
     // Logica para ahorrar dinero
     private void depositar() {
-        double monto;
-        try {
-            monto = Double.parseDouble(txtMonto.getText().trim());
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Ingrese un valor numerico valido.");
-            return;
-        }
-
-        if (monto <= 0) {
-            JOptionPane.showMessageDialog(this, "El monto debe ser mayor a 0.");
-            return;
-        }
+        double monto = parsearMonto();
+        if (monto < 0) return;
 
         if (controller.depositar(ahorro, monto)) {
             actualizarSaldos();
@@ -136,18 +120,8 @@ public class AhorroView extends JFrame {
 
     // Logica para retirar dinero del ahorro
     private void retirar() {
-        double monto;
-        try {
-            monto = Double.parseDouble(txtMonto.getText().trim());
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Ingrese un valor numerico valido.");
-            return;
-        }
-
-        if (monto <= 0) {
-            JOptionPane.showMessageDialog(this, "El monto debe ser mayor a 0.");
-            return;
-        }
+        double monto = parsearMonto();
+        if (monto < 0) return;
 
         if (controller.retirar(ahorro, monto)) {
             actualizarSaldos();
@@ -162,17 +136,34 @@ public class AhorroView extends JFrame {
         }
     }
 
+    /**
+     * REUTILIZACION: valida y convierte el texto del campo monto a numero.
+     * Retorna -1 si es invalido, evitando duplicar validacion en depositar y retirar.
+     */
+    private double parsearMonto() {
+        try {
+            double monto = Double.parseDouble(txtMonto.getText().trim());
+            if (monto <= 0) {
+                JOptionPane.showMessageDialog(this, "El monto debe ser mayor a 0.");
+                return -1;
+            }
+            return monto;
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Ingrese un valor numerico valido.");
+            return -1;
+        }
+    }
+
     // Actualiza los labels con los valores reales desde la BD
     private void actualizarSaldos() {
         double disponible = controller.getDisponible();
         lblDisponible.setText("$" + String.format("%,.2f", disponible));
         lblAhorrado.setText("$" + String.format("%,.2f", ahorro.getSaldo()));
 
-        // Cambia el color segun si el disponible es positivo o negativo
         if (disponible < 0) {
-            lblDisponible.setForeground(new Color(231, 76, 60));
+            lblDisponible.setForeground(EstiloApp.PELIGRO);
         } else {
-            lblDisponible.setForeground(new Color(46, 204, 113));
+            lblDisponible.setForeground(EstiloApp.EXITO);
         }
     }
 }

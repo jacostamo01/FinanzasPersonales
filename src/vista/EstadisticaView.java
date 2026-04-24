@@ -7,75 +7,68 @@ import controlador.EstadisticaController;
 /**
  * Ventana del modulo de estadisticas financieras.
  * Muestra totales, balance, porcentajes y promedios desde la BD.
+ * Incluye una grafica de barras comparando ingresos vs gastos.
  *
  * Conceptos de POO usados:
  * - HERENCIA: extiende de JFrame
- * - COMPOSICION: usa EstadisticaController para obtener los datos
+ * - COMPOSICION: usa EstadisticaController y GraficaPanel
  * - SETTER (setControlador): permite inyectar el controlador desde afuera
+ * - REUTILIZACION: usa EstiloApp para estilos y GraficaPanel para graficar
  */
 public class EstadisticaView extends JFrame {
 
     // Atributos privados (ENCAPSULAMIENTO)
     private EstadisticaController controlador;
     private JTextArea txtResultados;
-    private JButton btnCalcular;
+    private JPanel panelGrafica;
 
     // Constructor - configura la ventana y sus componentes
     public EstadisticaView() {
         this.controlador = new EstadisticaController();
-        configurarVentana();
-        crearComponentes();
-    }
 
-    private void configurarVentana() {
-        setTitle("Estadisticas Financieras");
-        setSize(420, 400);
+        EstiloApp.configurarVentana(this, "Estadisticas Financieras", 500, 560);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+
+        add(EstiloApp.crearHeader("ESTADISTICAS FINANCIERAS"), BorderLayout.NORTH);
+        add(crearContenido(), BorderLayout.CENTER);
     }
 
-    private void crearComponentes() {
-        // Panel superior con titulo
-        JPanel jpTitulo = new JPanel();
-        jpTitulo.setBackground(new Color(33, 97, 140));
-        JLabel lbTitulo = new JLabel("ESTADISTICAS FINANCIERAS");
-        lbTitulo.setForeground(Color.WHITE);
-        lbTitulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        jpTitulo.add(lbTitulo);
-        add(jpTitulo, BorderLayout.NORTH);
+    private JPanel crearContenido() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(EstiloApp.FONDO);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
-        // Panel central con boton y resultados
-        JPanel panelCentro = new JPanel();
-        panelCentro.setLayout(new BoxLayout(panelCentro, BoxLayout.Y_AXIS));
-        panelCentro.setBackground(Color.WHITE);
-
-        // Boton para calcular (jala datos de la BD al presionar)
-        btnCalcular = new JButton("Calcular Estadisticas");
-        btnCalcular.setBackground(new Color(52, 152, 219));
-        btnCalcular.setForeground(Color.WHITE);
-        btnCalcular.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnCalcular.setAlignmentX(CENTER_ALIGNMENT);
+        // Boton calcular
+        JPanel panelBtn = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panelBtn.setBackground(EstiloApp.FONDO);
+        JButton btnCalcular = EstiloApp.crearBoton("Calcular Estadisticas", EstiloApp.MORADO);
         btnCalcular.addActionListener(e -> calcular());
+        panelBtn.add(btnCalcular);
+        panel.add(panelBtn);
+        panel.add(Box.createVerticalStrut(8));
 
-        // Panel de resultados
-        JPanel jpResultado = new JPanel(new BorderLayout());
-        jpResultado.setBorder(BorderFactory.createTitledBorder("RESULTADOS"));
-        jpResultado.setBackground(new Color(245, 245, 245));
-
-        txtResultados = new JTextArea();
-        txtResultados.setFont(new Font("Monospaced", Font.PLAIN, 13));
+        // Resultados en texto
+        txtResultados = new JTextArea(8, 30);
         txtResultados.setEditable(false);
-        txtResultados.setBackground(new Color(248, 249, 250));
-        txtResultados.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        EstiloApp.aplicarEstiloArea(txtResultados);
         JScrollPane scroll = new JScrollPane(txtResultados);
-        jpResultado.add(scroll, BorderLayout.CENTER);
+        scroll.setBorder(BorderFactory.createLineBorder(EstiloApp.BORDE));
+        panel.add(scroll);
+        panel.add(Box.createVerticalStrut(8));
 
-        panelCentro.add(Box.createVerticalStrut(20));
-        panelCentro.add(btnCalcular);
-        panelCentro.add(Box.createVerticalStrut(15));
-        panelCentro.add(jpResultado);
+        // Panel para la grafica (REUTILIZACION de GraficaPanel)
+        panelGrafica = new JPanel(new BorderLayout());
+        panelGrafica.setBackground(EstiloApp.TARJETA);
+        panelGrafica.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(EstiloApp.BORDE),
+            "Grafica Ingresos vs Gastos",
+            0, 0, EstiloApp.FUENTE_BOTON, EstiloApp.TEXTO_SEC));
+        panelGrafica.setPreferredSize(new Dimension(450, 200));
+        panel.add(panelGrafica);
 
-        add(panelCentro, BorderLayout.CENTER);
+        return panel;
     }
 
     // Calcula las estadisticas con datos reales de la BD
@@ -102,10 +95,15 @@ public class EstadisticaView extends JFrame {
         } else {
             txtResultados.append("\nEstado: NEGATIVO - Gastas mas de lo que ganas");
         }
-    }
 
-    // SETTER: permite asignar un controlador desde afuera
-    public void setControlador(EstadisticaController controlador) {
-        this.controlador = controlador;
+        // Actualizar la grafica con los totales
+        panelGrafica.removeAll();
+        panelGrafica.add(new GraficaPanel(
+            new String[]{"Resumen Total"},
+            new double[]{ingresos},
+            new double[]{gastos}
+        ), BorderLayout.CENTER);
+        panelGrafica.revalidate();
+        panelGrafica.repaint();
     }
 }

@@ -23,6 +23,10 @@ public abstract class Movimiento {
     }
 
     // Getters y Setters - acceso controlado a los atributos
+    public int getId() {
+        return id;
+    }
+
     public void setId(int id) {
         this.id = id;
     }

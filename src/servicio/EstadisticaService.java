@@ -5,13 +5,12 @@ import modelo.Movimiento;
 import java.util.ArrayList;
 
 /**
- * Capa de SERVICIO para estadisticas financieras.
  * Calcula totales, balances y promedios usando datos de la BD.
  *
  * Conceptos de POO usados:
  * - COMPOSICION: usa objetos de Calculadora y MovimientoService
- *   en lugar de hacer todo aqui (reutiliza codigo)
  * - SEPARACION DE RESPONSABILIDADES: solo calcula, no muestra nada en pantalla
+ * - REUTILIZACION: calcularTotal() evita duplicar logica para ingresos y gastos
  */
 public class EstadisticaService {
 
@@ -25,28 +24,27 @@ public class EstadisticaService {
         this.movimientoService = new MovimientoService();
     }
 
-    // Trae los movimientos de la BD y suma solo los ingresos
-    public double calcularTotalIngresos() {
-        ArrayList<Movimiento> movimientos = movimientoService.listarMovimientos();
+    /**
+     * REUTILIZACION: metodo privado que suma montos filtrados por tipo.
+     * Evita duplicar la misma logica para ingresos y gastos.
+     */
+    private double calcularTotal(String tipo, ArrayList<Movimiento> movimientos) {
         double total = 0;
         for (Movimiento m : movimientos) {
-            if (m.getTipo().equals("Ingreso")) {
+            if (m.getTipo().equals(tipo)) {
                 total = calculadora.sumar(total, m.getMonto());
             }
         }
         return total;
     }
 
-    // Trae los movimientos de la BD y suma solo los gastos
+    // Calcula ingresos y gastos con UNA sola consulta a la BD
+    public double calcularTotalIngresos() {
+        return calcularTotal("Ingreso", movimientoService.listarMovimientos());
+    }
+
     public double calcularTotalGastos() {
-        ArrayList<Movimiento> movimientos = movimientoService.listarMovimientos();
-        double total = 0;
-        for (Movimiento m : movimientos) {
-            if (m.getTipo().equals("Gasto")) {
-                total = calculadora.sumar(total, m.getMonto());
-            }
-        }
-        return total;
+        return calcularTotal("Gasto", movimientoService.listarMovimientos());
     }
 
     // Balance = ingresos - gastos (usa Calculadora.restar)

@@ -14,101 +14,103 @@ import java.awt.*;
  * - HERENCIA: extiende de JFrame
  * - COMPOSICION: recibe el mismo objeto Ahorro que AhorroView
  * - CREACION DE OBJETOS: crea un objeto Inversion con los datos ingresados
+ * - REUTILIZACION: usa EstiloApp para estilos unificados
  */
 public class InversionView extends JFrame {
 
     // Atributos privados (ENCAPSULAMIENTO)
     private InversionController controller;
     private Ahorro ahorro;
-
-    // Componentes de la interfaz
     private JLabel lblCapitalDisp;
     private JTextField txtCapital;
     private JTextField txtTasa;
     private JTextField txtTiempo;
     private JTextArea txtResultados;
-    private JButton btnCalcular;
 
     // Constructor - recibe el ahorro compartido para saber cuanto hay disponible
     public InversionView(Ahorro ahorro) {
         this.controller = new InversionController();
         this.ahorro = ahorro;
-        configurarVentana();
-        crearComponentes();
-    }
 
-    private void configurarVentana() {
-        setTitle("Simulador de Inversiones");
-        setSize(430, 420);
+        EstiloApp.configurarVentana(this, "Simulador de Inversiones", 460, 480);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setLayout(null);
+        setLayout(new BorderLayout());
+
+        add(EstiloApp.crearHeader("SIMULADOR DE INVERSIONES"), BorderLayout.NORTH);
+        add(crearContenido(), BorderLayout.CENTER);
     }
 
-    private void crearComponentes() {
-        // Titulo
-        JLabel lblTitulo = new JLabel("Simulador de Inversiones", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 16));
-        lblTitulo.setBounds(0, 10, 430, 25);
-        add(lblTitulo);
+    private JPanel crearContenido() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(EstiloApp.FONDO);
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
-        // Muestra cuanto tiene ahorrado (capital disponible para invertir)
-        JLabel lblDispTitulo = new JLabel("Capital disponible (ahorrado):");
-        lblDispTitulo.setBounds(30, 50, 200, 20);
-        add(lblDispTitulo);
+        // Capital disponible
+        JPanel panelCapital = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        panelCapital.setBackground(EstiloApp.TARJETA);
+        panelCapital.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(EstiloApp.BORDE),
+            BorderFactory.createEmptyBorder(8, 15, 8, 15)));
+
+        JLabel lblTitCap = EstiloApp.crearLabel("Capital disponible (ahorrado):");
+        panelCapital.add(lblTitCap);
 
         lblCapitalDisp = new JLabel("$" + String.format("%,.2f", ahorro.getSaldo()));
-        lblCapitalDisp.setFont(new Font("Arial", Font.BOLD, 14));
-        lblCapitalDisp.setForeground(new Color(52, 152, 219));
-        lblCapitalDisp.setBounds(240, 45, 160, 25);
-        add(lblCapitalDisp);
+        lblCapitalDisp.setFont(EstiloApp.FUENTE_SUBTITULO);
+        lblCapitalDisp.setForeground(EstiloApp.PRIMARIO);
+        panelCapital.add(lblCapitalDisp);
 
-        JSeparator sep = new JSeparator();
-        sep.setBounds(30, 80, 360, 2);
-        add(sep);
+        panel.add(panelCapital);
+        panel.add(Box.createVerticalStrut(12));
 
-        // Campo: Capital a invertir
-        JLabel lbl1 = new JLabel("Capital a invertir:");
-        lbl1.setBounds(30, 95, 130, 25);
-        add(lbl1);
+        // Formulario
+        JPanel formulario = new JPanel(new GridBagLayout());
+        formulario.setBackground(EstiloApp.FONDO);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        txtCapital = new JTextField();
-        txtCapital.setBounds(180, 95, 140, 25);
-        add(txtCapital);
+        txtCapital = new JTextField(12);
+        txtTasa = new JTextField(12);
+        txtTiempo = new JTextField(12);
 
-        // Campo: Tasa de interes
-        JLabel lbl2 = new JLabel("Tasa interes (ej: 0.05):");
-        lbl2.setBounds(30, 130, 150, 25);
-        add(lbl2);
+        agregarCampo(formulario, gbc, 0, "Capital a invertir:", txtCapital);
+        agregarCampo(formulario, gbc, 1, "Tasa interes (ej: 0.05):", txtTasa);
+        agregarCampo(formulario, gbc, 2, "Tiempo (meses):", txtTiempo);
 
-        txtTasa = new JTextField();
-        txtTasa.setBounds(180, 130, 140, 25);
-        add(txtTasa);
+        panel.add(formulario);
+        panel.add(Box.createVerticalStrut(10));
 
-        // Campo: Tiempo en meses
-        JLabel lbl3 = new JLabel("Tiempo (meses):");
-        lbl3.setBounds(30, 165, 130, 25);
-        add(lbl3);
-
-        txtTiempo = new JTextField();
-        txtTiempo.setBounds(180, 165, 140, 25);
-        add(txtTiempo);
-
-        // Boton para calcular la inversion
-        btnCalcular = new JButton("Calcular Inversion");
-        btnCalcular.setBounds(120, 210, 180, 35);
-        btnCalcular.setBackground(new Color(26, 188, 156));
-        btnCalcular.setForeground(Color.WHITE);
+        // Boton calcular
+        JPanel panelBtn = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panelBtn.setBackground(EstiloApp.FONDO);
+        JButton btnCalcular = EstiloApp.crearBoton("Calcular Inversion", EstiloApp.TURQUESA);
         btnCalcular.addActionListener(e -> calcular());
-        add(btnCalcular);
+        panelBtn.add(btnCalcular);
+        panel.add(panelBtn);
+        panel.add(Box.createVerticalStrut(10));
 
-        // Area de texto para mostrar los resultados
-        txtResultados = new JTextArea();
+        // Resultados
+        txtResultados = new JTextArea(6, 30);
         txtResultados.setEditable(false);
-        txtResultados.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        EstiloApp.aplicarEstiloArea(txtResultados);
         JScrollPane scroll = new JScrollPane(txtResultados);
-        scroll.setBounds(30, 260, 360, 110);
-        add(scroll);
+        scroll.setBorder(BorderFactory.createLineBorder(EstiloApp.BORDE));
+        panel.add(scroll);
+
+        return panel;
+    }
+
+    // Metodo auxiliar para agregar un campo al formulario con GridBagLayout
+    private void agregarCampo(JPanel panel, GridBagConstraints gbc, int fila,
+                              String etiqueta, JTextField campo) {
+        JLabel lbl = EstiloApp.crearLabel(etiqueta);
+        EstiloApp.aplicarEstiloCampo(campo);
+        gbc.gridx = 0; gbc.gridy = fila;
+        panel.add(lbl, gbc);
+        gbc.gridx = 1;
+        panel.add(campo, gbc);
     }
 
     // Logica para calcular la inversion
@@ -117,7 +119,6 @@ public class InversionView extends JFrame {
         double tasa;
         int tiempo;
 
-        // Validar que los valores sean numericos
         try {
             capital = Double.parseDouble(txtCapital.getText().trim());
             tasa = Double.parseDouble(txtTasa.getText().trim());
@@ -127,13 +128,11 @@ public class InversionView extends JFrame {
             return;
         }
 
-        // Validar que todos sean positivos
         if (capital <= 0 || tasa <= 0 || tiempo <= 0) {
             JOptionPane.showMessageDialog(this, "Todos los valores deben ser mayores a 0.");
             return;
         }
 
-        // Validar que no invierta mas de lo que tiene ahorrado
         if (capital > ahorro.getSaldo()) {
             JOptionPane.showMessageDialog(this,
                 "No puedes invertir mas de lo que tienes ahorrado ($"
@@ -142,13 +141,12 @@ public class InversionView extends JFrame {
             return;
         }
 
-        // Crear objeto Inversion y calcular (CREACION DE OBJETOS)
+        // CREACION DE OBJETOS: crea un objeto Inversion con los datos ingresados
         Inversion inversion = new Inversion(capital, tasa, tiempo);
 
         double gananciaSimple = controller.calcularGanancia(inversion);
         double totalSimple = controller.calcularMontoTotal(inversion);
 
-        // Mostrar resultados
         txtResultados.setText("");
         txtResultados.append("=== RESULTADO DE LA INVERSION ===\n\n");
         txtResultados.append("Capital invertido:   $" + String.format("%,.2f", capital) + "\n");
