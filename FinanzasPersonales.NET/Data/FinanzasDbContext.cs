@@ -9,7 +9,7 @@ namespace FinanzasPersonales.NET.Data
         {
         }
 
-        // DbSets para las entidades
+        // entidades
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Ingreso> Ingresos { get; set; }
         public DbSet<Gasto> Gastos { get; set; }
@@ -20,20 +20,20 @@ namespace FinanzasPersonales.NET.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configuración de Usuario - mapear a tabla existente
+            //Usuario 
             modelBuilder.Entity<Usuario>(entity =>
             {
-                entity.ToTable("usuarios"); // Nombre de tabla en minúsculas
+                entity.ToTable("usuarios"); 
                 entity.HasKey(u => u.Id);
                 entity.Property(u => u.Id).HasColumnName("id");
                 entity.Property(u => u.Username).HasColumnName("username").IsRequired().HasMaxLength(50);
                 entity.Property(u => u.Password).HasColumnName("password").IsRequired().HasMaxLength(255);
-                // No mapear FechaCreacion ya que no existe en la tabla usuarios
+                
                 entity.Ignore(u => u.FechaCreacion);
                 entity.HasIndex(u => u.Username).IsUnique();
             });
 
-            // Configuración de Ingreso
+            //  Ingreso
             modelBuilder.Entity<Ingreso>(entity =>
             {
                 entity.ToTable("ingresos");
@@ -45,7 +45,7 @@ namespace FinanzasPersonales.NET.Data
                 entity.Property(i => i.UsuarioId).HasColumnName("usuario_id");
             });
 
-            // Configuración de Gasto
+            //  Gasto
             modelBuilder.Entity<Gasto>(entity =>
             {
                 entity.ToTable("gastos");
@@ -58,7 +58,7 @@ namespace FinanzasPersonales.NET.Data
                 entity.Property(g => g.UsuarioId).HasColumnName("usuario_id");
             });
 
-            // Configuración de Ahorro
+            //  Ahorro
             modelBuilder.Entity<Ahorro>(entity =>
             {
                 entity.ToTable("ahorros");
@@ -72,7 +72,7 @@ namespace FinanzasPersonales.NET.Data
                 entity.Property(a => a.UsuarioId).HasColumnName("usuario_id");
             });
 
-            // Configuración de Inversion
+            //  Inversion
             modelBuilder.Entity<Inversion>(entity =>
             {
                 entity.ToTable("inversiones");

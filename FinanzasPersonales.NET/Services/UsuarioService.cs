@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Services
 {
-    /// <summary>
-    /// Servicio para manejo de usuarios y autenticación.
-    /// </summary>
+    //autenticacion
     public class UsuarioService
     {
         private readonly FinanzasDbContext _context;
@@ -21,14 +19,14 @@ namespace FinanzasPersonales.NET.Services
         {
             try
             {
-                // Verificar si el usuario ya existe
+                // verifics si el usua exist
                 var usuarioExistente = await _context.Usuarios
                     .FirstOrDefaultAsync(u => u.Username == username);
 
                 if (usuarioExistente != null)
                     return false;
 
-                // Guardar contraseña en texto plano (compatible con base de datos existente)
+                // Guardar contraseña 
                 var nuevoUsuario = new Usuario(username, password);
                 _context.Usuarios.Add(nuevoUsuario);
                 await _context.SaveChangesAsync();
@@ -51,7 +49,6 @@ namespace FinanzasPersonales.NET.Services
                 if (usuario == null)
                     return null;
 
-                // Comparación directa con contraseña en texto plano
                 if (usuario.Password == password)
                     return usuario;
 

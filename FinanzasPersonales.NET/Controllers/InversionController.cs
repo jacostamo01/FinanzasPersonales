@@ -11,10 +11,12 @@ namespace FinanzasPersonales.NET.Controllers
     public class InversionController
     {
         private readonly InversionService _inversionService;
+        private readonly int _usuarioId;
 
-        public InversionController(InversionService inversionService)
+        public InversionController(InversionService inversionService, int usuarioId)
         {
             _inversionService = inversionService;
+            _usuarioId = usuarioId;
         }
 
         public async Task<bool> CrearInversionAsync(double montoInicial, double tasaInteres, string descripcion, DateTime? fechaVencimiento = null)
@@ -22,12 +24,12 @@ namespace FinanzasPersonales.NET.Controllers
             if (montoInicial <= 0 || tasaInteres < 0 || string.IsNullOrWhiteSpace(descripcion))
                 return false;
 
-            return await _inversionService.CrearInversionAsync(montoInicial, tasaInteres, descripcion.Trim(), fechaVencimiento);
+            return await _inversionService.CrearInversionAsync(montoInicial, tasaInteres, descripcion.Trim(), _usuarioId, fechaVencimiento);
         }
 
         public async Task<List<Inversion>> ListarInversionesAsync()
         {
-            return await _inversionService.ListarInversionesAsync();
+            return await _inversionService.ListarInversionesAsync(_usuarioId);
         }
 
         public async Task<bool> ActualizarValorInversionAsync(int inversionId)
@@ -40,22 +42,22 @@ namespace FinanzasPersonales.NET.Controllers
 
         public async Task<double> GetTotalInvertidoAsync()
         {
-            return await _inversionService.CalcularTotalInvertidoAsync();
+            return await _inversionService.CalcularTotalInvertidoAsync(_usuarioId);
         }
 
         public async Task<double> GetValorTotalActualAsync()
         {
-            return await _inversionService.CalcularValorTotalActualAsync();
+            return await _inversionService.CalcularValorTotalActualAsync(_usuarioId);
         }
 
         public async Task<double> GetGananciaTotalAsync()
         {
-            return await _inversionService.CalcularGananciaTotalAsync();
+            return await _inversionService.CalcularGananciaTotalAsync(_usuarioId);
         }
 
         public async Task<List<Inversion>> ListarInversionesVencidasAsync()
         {
-            return await _inversionService.ListarInversionesVencidasAsync();
+            return await _inversionService.ListarInversionesVencidasAsync(_usuarioId);
         }
 
         public double CalcularGanancia(Inversion inversion)

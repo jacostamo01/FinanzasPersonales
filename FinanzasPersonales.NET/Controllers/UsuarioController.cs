@@ -4,9 +4,7 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Controllers
 {
-    /// <summary>
-    /// Controlador para el manejo de usuarios y autenticación.
-    /// </summary>
+    //conytrolamos usuario y autent
     public class UsuarioController
     {
         private readonly UsuarioService _usuarioService;

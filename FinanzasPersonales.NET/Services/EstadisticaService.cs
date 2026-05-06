@@ -19,39 +19,43 @@ namespace FinanzasPersonales.NET.Services
             _context = context;
         }
 
-        public async Task<double> CalcularTotalIngresosAsync()
+        public async Task<double> CalcularTotalIngresosAsync(int usuarioId)
         {
-            return await _context.Ingresos.SumAsync(i => i.Monto);
+            var tiene = await _context.Ingresos.AnyAsync(i => i.UsuarioId == usuarioId);
+            if (!tiene) return 0;
+            return await _context.Ingresos.Where(i => i.UsuarioId == usuarioId).SumAsync(i => i.Monto);
         }
 
-        public async Task<double> CalcularTotalGastosAsync()
+        public async Task<double> CalcularTotalGastosAsync(int usuarioId)
         {
-            return await _context.Gastos.SumAsync(g => g.Monto);
+            var tiene = await _context.Gastos.AnyAsync(g => g.UsuarioId == usuarioId);
+            if (!tiene) return 0;
+            return await _context.Gastos.Where(g => g.UsuarioId == usuarioId).SumAsync(g => g.Monto);
         }
 
-        public async Task<double> CalcularBalanceAsync()
+        public async Task<double> CalcularBalanceAsync(int usuarioId)
         {
-            var ingresos = await CalcularTotalIngresosAsync();
-            var gastos = await CalcularTotalGastosAsync();
+            var ingresos = await CalcularTotalIngresosAsync(usuarioId);
+            var gastos = await CalcularTotalGastosAsync(usuarioId);
             return ingresos - gastos;
         }
 
-        public async Task<double> CalcularPromedioIngresosAsync()
+        public async Task<double> CalcularPromedioIngresosAsync(int usuarioId)
         {
-            var ingresos = await _context.Ingresos.ToListAsync();
+            var ingresos = await _context.Ingresos.Where(i => i.UsuarioId == usuarioId).ToListAsync();
             return ingresos.Any() ? ingresos.Average(i => i.Monto) : 0;
         }
 
-        public async Task<double> CalcularPromedioGastosAsync()
+        public async Task<double> CalcularPromedioGastosAsync(int usuarioId)
         {
-            var gastos = await _context.Gastos.ToListAsync();
+            var gastos = await _context.Gastos.Where(g => g.UsuarioId == usuarioId).ToListAsync();
             return gastos.Any() ? gastos.Average(g => g.Monto) : 0;
         }
 
-        public async Task<int> ContarMovimientosAsync()
+        public async Task<int> ContarMovimientosAsync(int usuarioId)
         {
-            var ingresos = await _context.Ingresos.CountAsync();
-            var gastos = await _context.Gastos.CountAsync();
+            var ingresos = await _context.Ingresos.CountAsync(i => i.UsuarioId == usuarioId);
+            var gastos = await _context.Gastos.CountAsync(g => g.UsuarioId == usuarioId);
             return ingresos + gastos;
         }
 
@@ -61,9 +65,10 @@ namespace FinanzasPersonales.NET.Services
             return (gastos / ingresos) * 100;
         }
 
-        public async Task<List<(string Categoria, double Total)>> ObtenerGastosPorCategoriaAsync()
+        public async Task<List<(string Categoria, double Total)>> ObtenerGastosPorCategoriaAsync(int usuarioId)
         {
             return await _context.Gastos
+                .Where(g => g.UsuarioId == usuarioId)
                 .GroupBy(g => g.Categoria)
                 .Select(group => new ValueTuple<string, double>(
                     group.Key ?? "Sin categoría", 
@@ -71,14 +76,16 @@ namespace FinanzasPersonales.NET.Services
                 .ToListAsync();
         }
 
-        public async Task<List<(int Mes, int Anio, double TotalIngresos, double TotalGastos)>> ObtenerResumenMensualAsync()
+        public async Task<List<(int Mes, int Anio, double TotalIngresos, double TotalGastos)>> ObtenerResumenMensualAsync(int usuarioId)
         {
             var ingresosPorMes = await _context.Ingresos
+                .Where(i => i.UsuarioId == usuarioId)
                 .GroupBy(i => new { i.Fecha.Month, i.Fecha.Year })
                 .Select(g => new { g.Key.Month, g.Key.Year, Total = g.Sum(i => i.Monto) })
                 .ToListAsync();
 
             var gastosPorMes = await _context.Gastos
+                .Where(g => g.UsuarioId == usuarioId)
                 .GroupBy(g => new { g.Fecha.Month, g.Fecha.Year })
                 .Select(g => new { g.Key.Month, g.Key.Year, Total = g.Sum(i => i.Monto) })
                 .ToListAsync();

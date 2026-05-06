@@ -2,9 +2,7 @@ using System;
 
 namespace FinanzasPersonales.NET.Views
 {
-    /// <summary>
-    /// Panel para mostrar gráficas (funcionalidad futura).
-    /// </summary>
+    //mostrar graficas aun no stan implementadad
     public class GraficaPanel
     {
         public void MostrarGrafica()

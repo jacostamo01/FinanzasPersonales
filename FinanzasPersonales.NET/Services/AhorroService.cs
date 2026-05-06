@@ -21,11 +21,11 @@ namespace FinanzasPersonales.NET.Services
             _movimientoService = movimientoService;
         }
 
-        public async Task<bool> CrearMetaAhorroAsync(double montoObjetivo, string descripcion, DateTime? fechaObjetivo = null)
+        public async Task<bool> CrearMetaAhorroAsync(double montoObjetivo, string descripcion, int usuarioId, DateTime? fechaObjetivo = null)
         {
             try
             {
-                var ahorro = new Ahorro(montoObjetivo, descripcion, fechaObjetivo);
+                var ahorro = new Ahorro(montoObjetivo, descripcion, fechaObjetivo) { UsuarioId = usuarioId };
                 _context.Ahorros.Add(ahorro);
                 await _context.SaveChangesAsync();
                 return true;
@@ -36,17 +36,17 @@ namespace FinanzasPersonales.NET.Services
             }
         }
 
-        public async Task<List<Ahorro>> ListarAhorrosAsync()
+        public async Task<List<Ahorro>> ListarAhorrosAsync(int usuarioId)
         {
-            return await _context.Ahorros.OrderByDescending(a => a.FechaCreacion).ToListAsync();
+            return await _context.Ahorros.Where(a => a.UsuarioId == usuarioId).OrderByDescending(a => a.FechaCreacion).ToListAsync();
         }
 
-        public async Task<double> CalcularDisponibleAsync()
+        public async Task<double> CalcularDisponibleAsync(int usuarioId)
         {
-            return await _movimientoService.CalcularBalanceAsync();
+            return await _movimientoService.CalcularBalanceAsync(usuarioId);
         }
 
-        public async Task<bool> DepositarAhorroAsync(int ahorroId, double monto)
+        public async Task<bool> DepositarAhorroAsync(int ahorroId, double monto, int usuarioId)
         {
             if (monto <= 0) return false;
 
@@ -55,7 +55,7 @@ namespace FinanzasPersonales.NET.Services
                 var ahorro = await _context.Ahorros.FindAsync(ahorroId);
                 if (ahorro == null) return false;
 
-                var disponible = await CalcularDisponibleAsync();
+                var disponible = await CalcularDisponibleAsync(usuarioId);
                 if (monto > disponible) return false;
 
                 ahorro.Depositar(monto);
@@ -90,15 +90,17 @@ namespace FinanzasPersonales.NET.Services
             }
         }
 
-        public async Task<double> CalcularTotalAhorradoAsync()
+        public async Task<double> CalcularTotalAhorradoAsync(int usuarioId)
         {
-            return await _context.Ahorros.SumAsync(a => a.MontoActual);
+            var tiene = await _context.Ahorros.AnyAsync(a => a.UsuarioId == usuarioId);
+            if (!tiene) return 0;
+            return await _context.Ahorros.Where(a => a.UsuarioId == usuarioId).SumAsync(a => a.MontoActual);
         }
 
-        public async Task<List<Ahorro>> ListarAhorrosCompletosAsync()
+        public async Task<List<Ahorro>> ListarAhorrosCompletosAsync(int usuarioId)
         {
             return await _context.Ahorros
-                .Where(a => a.MontoActual >= a.MontoObjetivo)
+                .Where(a => a.UsuarioId == usuarioId && a.MontoActual >= a.MontoObjetivo)
                 .ToListAsync();
         }
     }

@@ -90,20 +90,11 @@ namespace FinanzasPersonales.NET
             services.AddScoped<EstadisticaService>();
             services.AddScoped<InversionService>();
 
-            // Registrar controladores
+            // Registrar controladores (solo UsuarioController en DI, los demás se crean tras el login)
             services.AddScoped<UsuarioController>();
-            services.AddScoped<MovimientoController>();
-            services.AddScoped<AhorroController>();
-            services.AddScoped<EstadisticaController>();
-            services.AddScoped<InversionController>();
 
-            // Registrar vistas
+            // Registrar vistas (solo ViewLogin en DI)
             services.AddScoped<ViewLogin>();
-            services.AddScoped<ViewMenuPrincipal>();
-            services.AddScoped<ViewMovimientos>();
-            services.AddScoped<AhorroView>();
-            services.AddScoped<EstadisticaView>();
-            services.AddScoped<InversionView>();
 
             // Configuración
             services.AddSingleton<IConfiguration>(configuration);
@@ -128,11 +119,16 @@ namespace FinanzasPersonales.NET
                 return;
             }
 
-            // Una vez logueado, mostrar el menú principal
-            var movimientoController = scope.ServiceProvider.GetRequiredService<MovimientoController>();
-            var ahorroController = scope.ServiceProvider.GetRequiredService<AhorroController>();
-            var estadisticaController = scope.ServiceProvider.GetRequiredService<EstadisticaController>();
-            var inversionController = scope.ServiceProvider.GetRequiredService<InversionController>();
+            // Una vez logueado, crear controladores con el id del usuario
+            var movimientoService = scope.ServiceProvider.GetRequiredService<MovimientoService>();
+            var ahorroService = scope.ServiceProvider.GetRequiredService<AhorroService>();
+            var estadisticaService = scope.ServiceProvider.GetRequiredService<EstadisticaService>();
+            var inversionService = scope.ServiceProvider.GetRequiredService<InversionService>();
+
+            var movimientoController = new MovimientoController(movimientoService, usuarioLogueado.Id);
+            var ahorroController = new AhorroController(ahorroService, usuarioLogueado.Id);
+            var estadisticaController = new EstadisticaController(estadisticaService, usuarioLogueado.Id);
+            var inversionController = new InversionController(inversionService, usuarioLogueado.Id);
 
             var menuPrincipal = new ViewMenuPrincipal(
                 movimientoController,

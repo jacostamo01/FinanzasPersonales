@@ -19,11 +19,11 @@ namespace FinanzasPersonales.NET.Services
             _context = context;
         }
 
-        public async Task<bool> CrearInversionAsync(double montoInicial, double tasaInteres, string descripcion, DateTime? fechaVencimiento = null)
+        public async Task<bool> CrearInversionAsync(double montoInicial, double tasaInteres, string descripcion, int usuarioId, DateTime? fechaVencimiento = null)
         {
             try
             {
-                var inversion = new Inversion(montoInicial, tasaInteres, descripcion, fechaVencimiento);
+                var inversion = new Inversion(montoInicial, tasaInteres, descripcion, fechaVencimiento) { UsuarioId = usuarioId };
                 _context.Inversiones.Add(inversion);
                 await _context.SaveChangesAsync();
                 return true;
@@ -34,9 +34,9 @@ namespace FinanzasPersonales.NET.Services
             }
         }
 
-        public async Task<List<Inversion>> ListarInversionesAsync()
+        public async Task<List<Inversion>> ListarInversionesAsync(int usuarioId)
         {
-            return await _context.Inversiones.OrderByDescending(i => i.FechaInicio).ToListAsync();
+            return await _context.Inversiones.Where(i => i.UsuarioId == usuarioId).OrderByDescending(i => i.FechaInicio).ToListAsync();
         }
 
         public async Task<bool> ActualizarValorInversionAsync(int inversionId)
@@ -56,14 +56,16 @@ namespace FinanzasPersonales.NET.Services
             }
         }
 
-        public async Task<double> CalcularTotalInvertidoAsync()
+        public async Task<double> CalcularTotalInvertidoAsync(int usuarioId)
         {
-            return await _context.Inversiones.SumAsync(i => i.MontoInicial);
+            var tiene = await _context.Inversiones.AnyAsync(i => i.UsuarioId == usuarioId);
+            if (!tiene) return 0;
+            return await _context.Inversiones.Where(i => i.UsuarioId == usuarioId).SumAsync(i => i.MontoInicial);
         }
 
-        public async Task<double> CalcularValorTotalActualAsync()
+        public async Task<double> CalcularValorTotalActualAsync(int usuarioId)
         {
-            var inversiones = await _context.Inversiones.ToListAsync();
+            var inversiones = await _context.Inversiones.Where(i => i.UsuarioId == usuarioId).ToListAsync();
             double total = 0;
 
             foreach (var inversion in inversiones)
@@ -76,18 +78,18 @@ namespace FinanzasPersonales.NET.Services
             return total;
         }
 
-        public async Task<double> CalcularGananciaTotalAsync()
+        public async Task<double> CalcularGananciaTotalAsync(int usuarioId)
         {
-            var totalInvertido = await CalcularTotalInvertidoAsync();
-            var valorActual = await CalcularValorTotalActualAsync();
+            var totalInvertido = await CalcularTotalInvertidoAsync(usuarioId);
+            var valorActual = await CalcularValorTotalActualAsync(usuarioId);
             return valorActual - totalInvertido;
         }
 
-        public async Task<List<Inversion>> ListarInversionesVencidasAsync()
+        public async Task<List<Inversion>> ListarInversionesVencidasAsync(int usuarioId)
         {
             var today = DateTime.Today;
             return await _context.Inversiones
-                .Where(i => i.FechaVencimiento.HasValue && i.FechaVencimiento.Value <= today)
+                .Where(i => i.UsuarioId == usuarioId && i.FechaVencimiento.HasValue && i.FechaVencimiento.Value <= today)
                 .ToListAsync();
         }
 

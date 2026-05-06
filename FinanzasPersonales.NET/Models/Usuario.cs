@@ -4,9 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinanzasPersonales.NET.Models
 {
-    /// <summary>
-    /// Representa un usuario del sistema.
-    /// </summary>
+    //usuar en db
     public class Usuario
     {
         [Key]
@@ -20,13 +18,13 @@ namespace FinanzasPersonales.NET.Models
         [StringLength(256)]
         public string Password { get; set; } = string.Empty;
 
-        [NotMapped] // No mapear a la base de datos si la columna no existe
+        [NotMapped] 
         public DateTime FechaCreacion { get; set; } = DateTime.Now;
 
-        // Constructor sin parámetros requerido por Entity Framework
+        
         public Usuario() { }
 
-        // Constructor con parámetros
+        
         public Usuario(string username, string password)
         {
             Username = username;
@@ -34,7 +32,7 @@ namespace FinanzasPersonales.NET.Models
             FechaCreacion = DateTime.Now;
         }
 
-        // Método para validar la contraseña (simple comparación por ahora)
+        // validar contraseña
         public bool ValidarPassword(string password)
         {
             return Password == password;

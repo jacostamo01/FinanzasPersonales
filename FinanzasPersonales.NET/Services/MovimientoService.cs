@@ -19,11 +19,11 @@ namespace FinanzasPersonales.NET.Services
             _context = context;
         }
 
-        public async Task<bool> AgregarIngresoAsync(double monto, string descripcion)
+        public async Task<bool> AgregarIngresoAsync(double monto, string descripcion, int usuarioId)
         {
             try
             {
-                var ingreso = new Ingreso(monto, descripcion);
+                var ingreso = new Ingreso(monto, descripcion) { UsuarioId = usuarioId };
                 _context.Ingresos.Add(ingreso);
                 await _context.SaveChangesAsync();
                 return true;
@@ -34,11 +34,11 @@ namespace FinanzasPersonales.NET.Services
             }
         }
 
-        public async Task<bool> AgregarGastoAsync(double monto, string descripcion, string categoria = "")
+        public async Task<bool> AgregarGastoAsync(double monto, string descripcion, int usuarioId, string categoria = "")
         {
             try
             {
-                var gasto = new Gasto(monto, descripcion, categoria);
+                var gasto = new Gasto(monto, descripcion, categoria) { UsuarioId = usuarioId };
                 _context.Gastos.Add(gasto);
                 await _context.SaveChangesAsync();
                 return true;
@@ -49,12 +49,12 @@ namespace FinanzasPersonales.NET.Services
             }
         }
 
-        public async Task<List<Movimiento>> ListarMovimientosAsync()
+        public async Task<List<Movimiento>> ListarMovimientosAsync(int usuarioId)
         {
             var movimientos = new List<Movimiento>();
 
-            var ingresos = await _context.Ingresos.ToListAsync();
-            var gastos = await _context.Gastos.ToListAsync();
+            var ingresos = await _context.Ingresos.Where(i => i.UsuarioId == usuarioId).ToListAsync();
+            var gastos = await _context.Gastos.Where(g => g.UsuarioId == usuarioId).ToListAsync();
 
             movimientos.AddRange(ingresos);
             movimientos.AddRange(gastos);
@@ -62,43 +62,47 @@ namespace FinanzasPersonales.NET.Services
             return movimientos.OrderByDescending(m => m.Fecha).ToList();
         }
 
-        public async Task<List<Ingreso>> ListarIngresosAsync()
+        public async Task<List<Ingreso>> ListarIngresosAsync(int usuarioId)
         {
-            return await _context.Ingresos.OrderByDescending(i => i.Fecha).ToListAsync();
+            return await _context.Ingresos.Where(i => i.UsuarioId == usuarioId).OrderByDescending(i => i.Fecha).ToListAsync();
         }
 
-        public async Task<List<Gasto>> ListarGastosAsync()
+        public async Task<List<Gasto>> ListarGastosAsync(int usuarioId)
         {
-            return await _context.Gastos.OrderByDescending(g => g.Fecha).ToListAsync();
+            return await _context.Gastos.Where(g => g.UsuarioId == usuarioId).OrderByDescending(g => g.Fecha).ToListAsync();
         }
 
-        public async Task<double> CalcularTotalIngresosAsync()
+        public async Task<double> CalcularTotalIngresosAsync(int usuarioId)
         {
-            return await _context.Ingresos.SumAsync(i => i.Monto);
+            var tiene = await _context.Ingresos.AnyAsync(i => i.UsuarioId == usuarioId);
+            if (!tiene) return 0;
+            return await _context.Ingresos.Where(i => i.UsuarioId == usuarioId).SumAsync(i => i.Monto);
         }
 
-        public async Task<double> CalcularTotalGastosAsync()
+        public async Task<double> CalcularTotalGastosAsync(int usuarioId)
         {
-            return await _context.Gastos.SumAsync(g => g.Monto);
+            var tiene = await _context.Gastos.AnyAsync(g => g.UsuarioId == usuarioId);
+            if (!tiene) return 0;
+            return await _context.Gastos.Where(g => g.UsuarioId == usuarioId).SumAsync(g => g.Monto);
         }
 
-        public async Task<double> CalcularBalanceAsync()
+        public async Task<double> CalcularBalanceAsync(int usuarioId)
         {
-            var totalIngresos = await CalcularTotalIngresosAsync();
-            var totalGastos = await CalcularTotalGastosAsync();
+            var totalIngresos = await CalcularTotalIngresosAsync(usuarioId);
+            var totalGastos = await CalcularTotalGastosAsync(usuarioId);
             return totalIngresos - totalGastos;
         }
 
-        public async Task<List<Movimiento>> ListarMovimientosPorMesAsync(int mes, int anio)
+        public async Task<List<Movimiento>> ListarMovimientosPorMesAsync(int mes, int anio, int usuarioId)
         {
             var movimientos = new List<Movimiento>();
 
             var ingresos = await _context.Ingresos
-                .Where(i => i.Fecha.Month == mes && i.Fecha.Year == anio)
+                .Where(i => i.UsuarioId == usuarioId && i.Fecha.Month == mes && i.Fecha.Year == anio)
                 .ToListAsync();
 
             var gastos = await _context.Gastos
-                .Where(g => g.Fecha.Month == mes && g.Fecha.Year == anio)
+                .Where(g => g.UsuarioId == usuarioId && g.Fecha.Month == mes && g.Fecha.Year == anio)
                 .ToListAsync();
 
             movimientos.AddRange(ingresos);
