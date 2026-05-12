@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Views
 {
-    /// <summary>
-    /// Vista principal del menú de la aplicación.
-    /// </summary>
     public class ViewMenuPrincipal
     {
         private readonly MovimientoController _movimientoController;

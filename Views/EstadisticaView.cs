@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Views
 {
-    /// <summary>
-    /// Vista para mostrar estadísticas financieras.
-    /// </summary>
     public class EstadisticaView
     {
         private readonly EstadisticaController _controller;

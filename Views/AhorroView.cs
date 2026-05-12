@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Views
 {
-    /// <summary>
-    /// Vista para manejo de ahorros.
-    /// </summary>
     public class AhorroView
     {
         private readonly AhorroController _controller;

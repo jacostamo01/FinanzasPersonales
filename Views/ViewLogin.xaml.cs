@@ -29,15 +29,10 @@ namespace FinanzasPersonales.NET.Views
                 if (usuario != null)
                 {
                     MessageBox.Show(
-                        "Inicio de sesión exitoso. Bienvenido " + usuario.Username,
-                        "Login",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+                        "Inicio de sesión exitoso. Bienvenido " + usuario.Username, "Login", MessageBoxButton.OK, MessageBoxImage.Information
+                    );
 
                     txtMensaje.Text = "Usuario autenticado correctamente.";
-
-                    // Aquí puedes abrir luego tu menú principal XAML.
-                    // Ejemplo futuro: new MenuPrincipalWindow(usuario).Show(); Close();
                 }
                 else
                 {
@@ -46,7 +41,12 @@ namespace FinanzasPersonales.NET.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al iniciar sesión: " + ex.Message);
+                MessageBox.Show(
+                    "Error al iniciar sesión:\n",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 
@@ -63,7 +63,8 @@ namespace FinanzasPersonales.NET.Views
                 bool exito = await _usuarioController.RegistrarUsuarioAsync(
                     username,
                     password,
-                    confirmPassword);
+                    confirmPassword
+                );
 
                 if (exito)
                 {
@@ -79,10 +80,15 @@ namespace FinanzasPersonales.NET.Views
                         "y que el usuario no exista.";
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                MessageBox.Show("Error al registrar usuario: " + ex.Message);
+                MessageBox.Show(
+                    "Error al iniciar sesión:\n" + ex.Message,
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
+        }
     }
-}

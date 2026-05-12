@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Views
 {
-    /// <summary>
-    /// Vista para manejo de inversiones.
-    /// </summary>
     public class InversionView
     {
         private readonly InversionController _controller;

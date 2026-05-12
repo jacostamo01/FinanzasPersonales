@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Views
 {
-    /// <summary>
-    /// Vista para manejo de movimientos (ingresos y gastos).
-    /// </summary>
     public class ViewMovimientos
     {
         private readonly MovimientoController _controller;
