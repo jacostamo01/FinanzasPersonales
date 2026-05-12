@@ -1,0 +1,101 @@
+﻿<Window x:Class="FinanzasPersonales.NET.Views.AhorroView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Finanzas Personales - Ahorros"
+        Height="750"
+        Width="520"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+
+    <Grid Margin="24">
+        <StackPanel>
+
+            <TextBlock Text="AHORROS"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,8" />
+
+            <TextBlock Text="Metas de ahorro"
+                       FontSize="14"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,20" />
+
+            <!-- Formulario -->
+            <TextBlock Text="Descripción:" />
+            <TextBox x:Name="txtDescripcion"
+                     Height="32"
+                     Margin="0,6,0,14" />
+
+            <TextBlock Text="Monto objetivo:" />
+            <TextBox x:Name="txtMonto"
+                     Height="32"
+                     Margin="0,6,0,14" />
+
+            <TextBlock Text="Fecha objetivo (dd/MM/yyyy) - opcional:" />
+            <TextBox x:Name="txtFecha"
+                     Height="32"
+                     Margin="0,6,0,20" />
+
+            <Button Content="Crear Meta de Ahorro"
+                    Height="36"
+                    Margin="0,0,0,10"
+                    Click="BtnCrearMeta_Click" />
+
+            <!-- Depositar / Retirar -->
+            <TextBlock Text="ID de meta:" />
+            <TextBox x:Name="txtAhorroId"
+                     Height="32"
+                     Margin="0,6,0,14" />
+
+            <TextBlock Text="Monto a depositar/retirar:" />
+            <TextBox x:Name="txtMontoAccion"
+                     Height="32"
+                     Margin="0,6,0,14" />
+
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0"
+                        Content="Depositar"
+                        Height="36"
+                        Click="BtnDepositar_Click" />
+                <Button Grid.Column="2"
+                        Content="Retirar"
+                        Height="36"
+                        Click="BtnRetirar_Click" />
+            </Grid>
+
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0"
+                        Content="Ver Metas"
+                        Height="36"
+                        Click="BtnVerMetas_Click" />
+                <Button Grid.Column="2"
+                        Content="Ver Resumen"
+                        Height="36"
+                        Click="BtnVerResumen_Click" />
+            </Grid>
+
+            <Button Content="Volver al Menú Principal"
+                    Height="36"
+                    Margin="0,0,0,10"
+                    Click="BtnVolver_Click" />
+
+            <TextBlock x:Name="txtMensaje"
+                       Text=""
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       Margin="0,12,0,0" />
+
+        </StackPanel>
+    </Grid>
+</Window>

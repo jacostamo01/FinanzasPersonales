@@ -38,7 +38,7 @@ namespace FinanzasPersonales.NET
                 var usuarioService = new UsuarioService(_context);
                 var usuarioController = new UsuarioController(usuarioService);
 
-                var login = new ViewLogin(usuarioController);
+                var login = new ViewLogin(usuarioController, _context);
                 MainWindow = login;
                 login.Show();
             }

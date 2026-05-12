@@ -1,5 +1,7 @@
 using FinanzasPersonales.NET.Controllers;
+using FinanzasPersonales.NET.Data;
 using FinanzasPersonales.NET.Models;
+using FinanzasPersonales.NET.Services;
 using System;
 using System.Windows;
 
@@ -8,11 +10,13 @@ namespace FinanzasPersonales.NET.Views
     public partial class ViewLogin : Window
     {
         private readonly UsuarioController _usuarioController;
+        private readonly FinanzasDbContext _context;
 
-        public ViewLogin(UsuarioController usuarioController)
+        public ViewLogin(UsuarioController usuarioController, FinanzasDbContext context)
         {
             InitializeComponent();
             _usuarioController = usuarioController;
+            _context = context;
         }
 
         private async void BtnLogin_Click(object sender, RoutedEventArgs e)
@@ -20,7 +24,6 @@ namespace FinanzasPersonales.NET.Views
             try
             {
                 txtMensaje.Text = "";
-
                 string username = txtUsuario.Text.Trim();
                 string password = txtPassword.Password;
 
@@ -28,16 +31,19 @@ namespace FinanzasPersonales.NET.Views
 
                 if (usuario != null)
                 {
-                    MessageBox.Show(
-                        "Inicio de sesión exitoso. Bienvenido " + usuario.Username,
-                        "Login",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+                    var movimientoService = new MovimientoService(_context);
+                    var ahorroService = new AhorroService(_context, movimientoService);
+                    var estadisticaService = new EstadisticaService(_context);
+                    var inversionService = new InversionService(_context);
 
-                    txtMensaje.Text = "Usuario autenticado correctamente.";
-
-                    // Aquí puedes abrir luego tu menú principal XAML.
-                    // Ejemplo futuro: new MenuPrincipalWindow(usuario).Show(); Close();
+                    var menuPrincipal = new ViewMenuPrincipal(
+                        new MovimientoController(movimientoService, usuario.Id),
+                        new AhorroController(ahorroService, usuario.Id),
+                        new EstadisticaController(estadisticaService, usuario.Id),
+                        new InversionController(inversionService, usuario.Id),
+                        usuario);
+                    menuPrincipal.Show();
+                    Close();
                 }
                 else
                 {
@@ -55,15 +61,12 @@ namespace FinanzasPersonales.NET.Views
             try
             {
                 txtMensaje.Text = "";
-
                 string username = txtUsuario.Text.Trim();
                 string password = txtPassword.Password;
                 string confirmPassword = txtConfirmarPassword.Password;
 
                 bool exito = await _usuarioController.RegistrarUsuarioAsync(
-                    username,
-                    password,
-                    confirmPassword);
+                    username, password, confirmPassword);
 
                 if (exito)
                 {

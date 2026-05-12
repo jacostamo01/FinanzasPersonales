@@ -1,0 +1,57 @@
+﻿<Window x:Class="FinanzasPersonales.NET.Views.ViewMenuPrincipal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Finanzas Personales - Menú Principal"
+        Height="480"
+        Width="420"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+
+    <Grid Margin="24">
+        <StackPanel VerticalAlignment="Center">
+
+            <TextBlock Text="FINANZAS PERSONALES"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,8" />
+
+            <TextBlock x:Name="txtBienvenida"
+                       FontSize="14"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,24" />
+
+            <Button Content="Movimientos (Ingresos/Gastos)"
+                    Height="36"
+                    Margin="0,0,0,10"
+                    Click="BtnMovimientos_Click" />
+
+            <Button Content="Ahorros"
+                    Height="36"
+                    Margin="0,0,0,10"
+                    Click="BtnAhorros_Click" />
+
+            <Button Content="Inversiones"
+                    Height="36"
+                    Margin="0,0,0,10"
+                    Click="BtnInversiones_Click" />
+
+            <Button Content="Estadísticas"
+                    Height="36"
+                    Margin="0,0,0,10"
+                    Click="BtnEstadisticas_Click" />
+
+            <Button Content="Salir"
+                    Height="36"
+                    Margin="0,10,0,0"
+                    Click="BtnSalir_Click" />
+
+            <TextBlock x:Name="txtMensaje"
+                       Text=""
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       Margin="0,18,0,0" />
+
+        </StackPanel>
+    </Grid>
+</Window>
