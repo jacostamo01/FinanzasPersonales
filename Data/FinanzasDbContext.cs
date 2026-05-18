@@ -15,6 +15,7 @@ namespace FinanzasPersonales.NET.Data
         public DbSet<Gasto> Gastos { get; set; }
         public DbSet<Ahorro> Ahorros { get; set; }
         public DbSet<Inversion> Inversiones { get; set; }
+        public DbSet<ColchonFinanciero> ColchonesFinancieros { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -85,6 +86,19 @@ namespace FinanzasPersonales.NET.Data
                 entity.Property(i => i.FechaInicio).HasColumnName("fecha_inicio").HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(i => i.FechaVencimiento).HasColumnName("fecha_vencimiento");
                 entity.Property(i => i.UsuarioId).HasColumnName("usuario_id");
+            });
+
+            // Colchon financiero
+            modelBuilder.Entity<ColchonFinanciero>(entity =>
+            {
+                entity.ToTable("colchones_financieros");
+                entity.HasKey(c => c.Id);
+                entity.Property(c => c.Id).HasColumnName("id");
+                entity.Property(c => c.UsuarioId).HasColumnName("usuario_id");
+                entity.Property(c => c.MontoActual).HasColumnName("monto_actual").HasColumnType("double");
+                entity.Property(c => c.Meta).HasColumnName("meta").HasColumnType("double");
+                entity.Property(c => c.PorcentajeAhorro).HasColumnName("porcentaje_ahorro").HasColumnType("double");
+                entity.Property(c => c.FechaCreacion).HasColumnName("fecha_creacion").HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
         }
     }

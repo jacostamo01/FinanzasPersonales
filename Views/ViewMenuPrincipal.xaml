@@ -36,6 +36,11 @@
                     Margin="0,0,0,10"
                     Click="BtnInversiones_Click" />
 
+            <Button Content="Colchón financiero"
+                    Height="36"
+                    Margin="0,0,0,10"
+                    Click="BtnColchonFinanciero_Click" />
+
             <Button Content="Estadísticas"
                     Height="36"
                     Margin="0,0,0,10"
