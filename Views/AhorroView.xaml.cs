@@ -2,7 +2,6 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows;
 
 namespace FinanzasPersonales.NET.Views
@@ -15,6 +14,7 @@ namespace FinanzasPersonales.NET.Views
         {
             InitializeComponent();
             _controller = controller;
+            LimpiarTabla();
         }
 
         private async void BtnCrearMeta_Click(object sender, RoutedEventArgs e)
@@ -104,44 +104,50 @@ namespace FinanzasPersonales.NET.Views
             if (!ahorros.Any())
             {
                 txtMensaje.Text = "No hay metas de ahorro creadas.";
+                LimpiarTabla();
                 return;
             }
 
-            var sb = new StringBuilder();
-            foreach (var a in ahorros)
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = $"Metas de ahorro ({ahorros.Count})";
+            dgDatos.ItemsSource = ahorros.Select(a => new
             {
-                var estado = a.ObjetivoAlcanzado ? "Completado" : "En progreso";
-                sb.AppendLine($"ID: {a.Id} | {a.Descripcion}");
-                sb.AppendLine($"   ${a.MontoActual:F2} / ${a.MontoObjetivo:F2} - {a.GetPorcentajeProgreso():F1}% - {estado}");
-                sb.AppendLine();
-            }
-
-            MessageBox.Show(sb.ToString(), "Metas de Ahorro");
+                Id = a.Id,
+                Descripcion = a.Descripcion,
+                MontoObjetivo = $"${a.MontoObjetivo:F2}",
+                MontoActual = $"${a.MontoActual:F2}",
+                Progreso = $"{a.GetPorcentajeProgreso():F1}%",
+                Estado = a.ObjetivoAlcanzado ? "Completado" : "En progreso",
+                FechaObjetivo = a.FechaObjetivo?.ToString("dd/MM/yyyy") ?? "-"
+            }).ToList();
         }
 
         private async void BtnVerResumen_Click(object sender, RoutedEventArgs e)
         {
             var totalAhorrado = await _controller.GetTotalAhorradoAsync();
             var ahorrosCompletos = await _controller.ListarAhorrosCompletosAsync();
+            var totalMetas = await _controller.ListarAhorrosAsync();
 
-            var sb = new StringBuilder();
-            sb.AppendLine($"Total ahorrado: ${totalAhorrado:F2}");
-            sb.AppendLine($"Metas completadas: {ahorrosCompletos.Count}");
-
-            if (ahorrosCompletos.Any())
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = "Resumen de ahorros";
+            dgDatos.ItemsSource = new[]
             {
-                sb.AppendLine();
-                sb.AppendLine("Metas completadas:");
-                foreach (var a in ahorrosCompletos)
-                    sb.AppendLine($"- {a.Descripcion}: ${a.MontoActual:F2}");
-            }
-
-            MessageBox.Show(sb.ToString(), "Resumen de Ahorros");
+                new { Indicador = "Total ahorrado", Valor = $"${totalAhorrado:F2}" },
+                new { Indicador = "Metas creadas", Valor = totalMetas.Count.ToString() },
+                new { Indicador = "Metas completadas", Valor = ahorrosCompletos.Count.ToString() },
+                new { Indicador = "Metas en progreso", Valor = (totalMetas.Count - ahorrosCompletos.Count).ToString() }
+            };
         }
 
         private void BtnVolver_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void LimpiarTabla()
+        {
+            txtTablaTitulo.Text = string.Empty;
+            dgDatos.ItemsSource = null;
         }
     }
 }

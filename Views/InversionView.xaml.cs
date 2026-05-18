@@ -2,7 +2,6 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows;
 
 namespace FinanzasPersonales.NET.Views
@@ -15,6 +14,7 @@ namespace FinanzasPersonales.NET.Views
         {
             InitializeComponent();
             _controller = controller;
+            LimpiarTabla();
         }
 
         private async void BtnCrearInversion_Click(object sender, RoutedEventArgs e)
@@ -73,19 +73,22 @@ namespace FinanzasPersonales.NET.Views
             if (!inversiones.Any())
             {
                 txtMensaje.Text = "No hay inversiones registradas.";
+                LimpiarTabla();
                 return;
             }
 
-            var sb = new StringBuilder();
-            foreach (var inv in inversiones)
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = $"Inversiones ({inversiones.Count})";
+            dgDatos.ItemsSource = inversiones.Select(inv => new
             {
-                sb.AppendLine($"ID: {inv.Id} | {inv.Descripcion}");
-                sb.AppendLine($"   Inicial: ${inv.MontoInicial:F2} | Actual: ${inv.ValorActual:F2}");
-                sb.AppendLine($"   Tasa: {inv.TasaInteres:P2} | Rendimiento: {inv.GetRendimientoPorcentual():F2}%");
-                sb.AppendLine();
-            }
-
-            MessageBox.Show(sb.ToString(), "Inversiones");
+                Id = inv.Id,
+                Descripcion = inv.Descripcion,
+                MontoInicial = $"${inv.MontoInicial:F2}",
+                ValorActual = $"${inv.ValorActual:F2}",
+                TasaInteres = inv.TasaInteres.ToString("P2"),
+                Rendimiento = $"{inv.GetRendimientoPorcentual():F2}%",
+                FechaInicio = inv.FechaInicio.ToString("dd/MM/yyyy")
+            }).ToList();
         }
 
         private async void BtnVerResumen_Click(object sender, RoutedEventArgs e)
@@ -93,28 +96,30 @@ namespace FinanzasPersonales.NET.Views
             var totalInvertido = await _controller.GetTotalInvertidoAsync();
             var valorActual = await _controller.GetValorTotalActualAsync();
             var gananciaTotal = await _controller.GetGananciaTotalAsync();
+            var rendimiento = totalInvertido > 0
+                ? $"{(gananciaTotal / totalInvertido) * 100:F2}%"
+                : "N/A";
 
-            var sb = new StringBuilder();
-            sb.AppendLine($"Total invertido: ${totalInvertido:F2}");
-            sb.AppendLine($"Valor actual:    ${valorActual:F2}");
-
-            if (gananciaTotal >= 0)
-                sb.AppendLine($"Ganancia total:  ${gananciaTotal:F2}");
-            else
-                sb.AppendLine($"Pérdida total:   ${Math.Abs(gananciaTotal):F2}");
-
-            if (totalInvertido > 0)
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = "Resumen de inversiones";
+            dgDatos.ItemsSource = new[]
             {
-                var rendimiento = (gananciaTotal / totalInvertido) * 100;
-                sb.AppendLine($"Rendimiento:     {rendimiento:F2}%");
-            }
-
-            MessageBox.Show(sb.ToString(), "Resumen de Inversiones");
+                new { Indicador = "Total invertido", Valor = $"${totalInvertido:F2}" },
+                new { Indicador = "Valor actual", Valor = $"${valorActual:F2}" },
+                new { Indicador = gananciaTotal >= 0 ? "Ganancia total" : "Pérdida total", Valor = $"${Math.Abs(gananciaTotal):F2}" },
+                new { Indicador = "Rendimiento", Valor = rendimiento }
+            };
         }
 
         private void BtnVolver_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void LimpiarTabla()
+        {
+            txtTablaTitulo.Text = string.Empty;
+            dgDatos.ItemsSource = null;
         }
     }
 }

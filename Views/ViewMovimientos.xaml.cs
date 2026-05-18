@@ -1,9 +1,9 @@
 using FinanzasPersonales.NET.Controllers;
+using FinanzasPersonales.NET.Models;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace FinanzasPersonales.NET.Views
 {
@@ -15,6 +15,34 @@ namespace FinanzasPersonales.NET.Views
         {
             InitializeComponent();
             _controller = controller;
+            CargarCategorias();
+            LimpiarTabla();
+        }
+
+        private void CargarCategorias()
+        {
+            foreach (var categoria in CategoriaGasto.ObtenerCategorias())
+            {
+                // Encabezado de categoría padre (no seleccionable)
+                var encabezado = new ComboBoxItem
+                {
+                    Content = $"── {categoria.Nombre} ──",
+                    IsEnabled = false,
+                    FontWeight = System.Windows.FontWeights.Bold
+                };
+                cmbCategoria.Items.Add(encabezado);
+
+                // Subcategorías seleccionables
+                foreach (var sub in categoria.Subcategorias)
+                {
+                    var item = new ComboBoxItem
+                    {
+                        Content = sub,
+                        Tag = $"{categoria.Nombre}: {sub}"
+                    };
+                    cmbCategoria.Items.Add(item);
+                }
+            }
         }
 
         private async void BtnAgregarIngreso_Click(object sender, RoutedEventArgs e)
@@ -37,6 +65,7 @@ namespace FinanzasPersonales.NET.Views
                 ? $"Ingreso de ${monto:F2} agregado exitosamente."
                 : "Error al agregar el ingreso.";
 
+            chkUsarCategoria.IsChecked = false;
             LimpiarFormulario();
         }
 
@@ -54,13 +83,26 @@ namespace FinanzasPersonales.NET.Views
                 return;
             }
 
-            var categoriaSeleccionada = (cmbCategoria.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content?.ToString() ?? "Otros";
-            var exito = await _controller.AgregarGastoAsync(monto, txtDescripcion.Text, categoriaSeleccionada);
+            if (chkUsarCategoria.IsChecked != true)
+            {
+                txtMensaje.Text = "Activa la casilla de categoría para registrar el gasto.";
+                return;
+            }
+
+            if (cmbCategoria.SelectedItem is not ComboBoxItem item || item.Tag is not string categoria)
+            {
+                txtMensaje.Text = "Selecciona una categoría para el gasto.";
+                cmbCategoria.IsDropDownOpen = true;
+                return;
+            }
+
+            var exito = await _controller.AgregarGastoAsync(monto, txtDescripcion.Text, categoria);
 
             txtMensaje.Text = exito
-                ? $"Gasto de ${monto:F2} agregado exitosamente."
+                ? $"Gasto de ${monto:F2} ({categoria}) agregado exitosamente."
                 : "Error al agregar el gasto.";
 
+            chkUsarCategoria.IsChecked = false;
             LimpiarFormulario();
         }
 
@@ -71,14 +113,20 @@ namespace FinanzasPersonales.NET.Views
             if (!movimientos.Any())
             {
                 txtMensaje.Text = "No hay movimientos registrados.";
+                LimpiarTabla();
                 return;
             }
 
-            var sb = new StringBuilder();
-            foreach (var m in movimientos)
-                sb.AppendLine($"{m.Fecha:dd/MM/yyyy} | {m.GetTipo()} | ${m.Monto:F2} | {m.Descripcion}");
-
-            MessageBox.Show(sb.ToString(), "Todos los Movimientos");
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = $"Todos los movimientos ({movimientos.Count})";
+            dgDatos.ItemsSource = movimientos.Select(m => new
+            {
+                Fecha = m.Fecha.ToString("dd/MM/yyyy"),
+                Tipo = m.GetTipo(),
+                Monto = $"${m.Monto:F2}",
+                Descripcion = m.Descripcion,
+                Categoria = m is Gasto gasto ? gasto.Categoria : "-"
+            }).ToList();
         }
 
         private async void BtnVerIngresos_Click(object sender, RoutedEventArgs e)
@@ -88,14 +136,18 @@ namespace FinanzasPersonales.NET.Views
             if (!ingresos.Any())
             {
                 txtMensaje.Text = "No hay ingresos registrados.";
+                LimpiarTabla();
                 return;
             }
 
-            var sb = new StringBuilder();
-            foreach (var i in ingresos)
-                sb.AppendLine($"{i.Fecha:dd/MM/yyyy} | ${i.Monto:F2} | {i.Descripcion}");
-
-            MessageBox.Show(sb.ToString(), "Ingresos");
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = $"Ingresos ({ingresos.Count})";
+            dgDatos.ItemsSource = ingresos.Select(i => new
+            {
+                Fecha = i.Fecha.ToString("dd/MM/yyyy"),
+                Monto = $"${i.Monto:F2}",
+                Descripcion = i.Descripcion
+            }).ToList();
         }
 
         private async void BtnVerGastos_Click(object sender, RoutedEventArgs e)
@@ -105,14 +157,19 @@ namespace FinanzasPersonales.NET.Views
             if (!gastos.Any())
             {
                 txtMensaje.Text = "No hay gastos registrados.";
+                LimpiarTabla();
                 return;
             }
 
-            var sb = new StringBuilder();
-            foreach (var g in gastos)
-                sb.AppendLine($"{g.Fecha:dd/MM/yyyy} | ${g.Monto:F2} | {g.Categoria} | {g.Descripcion}");
-
-            MessageBox.Show(sb.ToString(), "Gastos");
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = $"Gastos ({gastos.Count})";
+            dgDatos.ItemsSource = gastos.Select(g => new
+            {
+                Fecha = g.Fecha.ToString("dd/MM/yyyy"),
+                Monto = $"${g.Monto:F2}",
+                Categoria = g.Categoria,
+                Descripcion = g.Descripcion
+            }).ToList();
         }
 
         private async void BtnVerResumen_Click(object sender, RoutedEventArgs e)
@@ -121,12 +178,29 @@ namespace FinanzasPersonales.NET.Views
             var totalGastos = await _controller.ObtenerTotalGastosAsync();
             var balance = await _controller.ObtenerBalanceAsync();
 
-            var mensaje = $"Total Ingresos: ${totalIngresos:F2}\n" +
-                          $"Total Gastos:   ${totalGastos:F2}\n" +
-                          $"------------------------\n" +
-                          $"Balance:        ${balance:F2}";
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = "Resumen financiero";
+            dgDatos.ItemsSource = new[]
+            {
+                new { Indicador = "Total ingresos", Valor = $"${totalIngresos:F2}" },
+                new { Indicador = "Total gastos", Valor = $"${totalGastos:F2}" },
+                new { Indicador = "Balance", Valor = $"${balance:F2}" }
+            };
+        }
 
-            MessageBox.Show(mensaje, "Resumen Financiero");
+        private void ChkUsarCategoria_Checked(object sender, RoutedEventArgs e)
+        {
+            cmbCategoria.IsEnabled = true;
+            btnAgregarIngreso.IsEnabled = false;
+            btnAgregarGasto.IsEnabled = true;
+        }
+
+        private void ChkUsarCategoria_Unchecked(object sender, RoutedEventArgs e)
+        {
+            cmbCategoria.SelectedIndex = -1;
+            cmbCategoria.IsEnabled = false;
+            btnAgregarIngreso.IsEnabled = true;
+            btnAgregarGasto.IsEnabled = true;
         }
 
         private void BtnVolver_Click(object sender, RoutedEventArgs e)
@@ -139,6 +213,15 @@ namespace FinanzasPersonales.NET.Views
             txtMonto.Clear();
             txtDescripcion.Clear();
             cmbCategoria.SelectedIndex = -1;
+            cmbCategoria.IsEnabled = false;
+            btnAgregarIngreso.IsEnabled = true;
+            btnAgregarGasto.IsEnabled = true;
+        }
+
+        private void LimpiarTabla()
+        {
+            txtTablaTitulo.Text = string.Empty;
+            dgDatos.ItemsSource = null;
         }
     }
 }

@@ -1,7 +1,6 @@
 using FinanzasPersonales.NET.Controllers;
 using System;
 using System.Linq;
-using System.Text;
 using System.Windows;
 
 namespace FinanzasPersonales.NET.Views
@@ -14,6 +13,7 @@ namespace FinanzasPersonales.NET.Views
         {
             InitializeComponent();
             _controller = controller;
+            LimpiarTabla();
         }
 
         private async void BtnResumenGeneral_Click(object sender, RoutedEventArgs e)
@@ -24,23 +24,22 @@ namespace FinanzasPersonales.NET.Views
             var promedioIngresos = await _controller.GetPromedioIngresosAsync();
             var promedioGastos = await _controller.GetPromedioGastosAsync();
             var totalMovimientos = await _controller.ContarMovimientosAsync();
+            var porcentaje = totalIngresos > 0
+                ? $"{_controller.CalcularPorcentajeGastos(totalGastos, totalIngresos):F1}%"
+                : "N/A";
 
-            var sb = new StringBuilder();
-            sb.AppendLine("=== RESUMEN GENERAL ===");
-            sb.AppendLine($"Total de ingresos:     ${totalIngresos:F2}");
-            sb.AppendLine($"Total de gastos:       ${totalGastos:F2}");
-            sb.AppendLine($"Balance actual:        ${balance:F2}");
-            sb.AppendLine($"Promedio de ingresos:  ${promedioIngresos:F2}");
-            sb.AppendLine($"Promedio de gastos:    ${promedioGastos:F2}");
-            sb.AppendLine($"Total de movimientos:  {totalMovimientos}");
-
-            if (totalIngresos > 0)
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = "Resumen general";
+            dgDatos.ItemsSource = new[]
             {
-                var porcentajeGastos = _controller.CalcularPorcentajeGastos(totalGastos, totalIngresos);
-                sb.AppendLine($"% de gastos/ingresos:  {porcentajeGastos:F1}%");
-            }
-
-            MessageBox.Show(sb.ToString(), "Resumen General");
+                new { Indicador = "Total ingresos", Valor = $"${totalIngresos:F2}" },
+                new { Indicador = "Total gastos", Valor = $"${totalGastos:F2}" },
+                new { Indicador = "Balance actual", Valor = $"${balance:F2}" },
+                new { Indicador = "Promedio ingresos", Valor = $"${promedioIngresos:F2}" },
+                new { Indicador = "Promedio gastos", Valor = $"${promedioGastos:F2}" },
+                new { Indicador = "Total movimientos", Valor = totalMovimientos.ToString() },
+                new { Indicador = "% gastos / ingresos", Valor = porcentaje }
+            };
         }
 
         private async void BtnGastosPorCategoria_Click(object sender, RoutedEventArgs e)
@@ -51,20 +50,21 @@ namespace FinanzasPersonales.NET.Views
             if (!gastosPorCategoria.Any())
             {
                 txtMensaje.Text = "No hay gastos registrados por categoría.";
+                LimpiarTabla();
                 return;
             }
 
-            var sb = new StringBuilder();
-            sb.AppendLine("=== GASTOS POR CATEGORÍA ===");
-            sb.AppendLine();
-
-            foreach (var (categoria, total) in gastosPorCategoria.OrderByDescending(x => x.Total))
-            {
-                var porcentaje = totalGastos > 0 ? (total / totalGastos) * 100 : 0;
-                sb.AppendLine($"{categoria}: ${total:F2} ({porcentaje:F1}%)");
-            }
-
-            MessageBox.Show(sb.ToString(), "Gastos por Categoría");
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = "Gastos por categoría";
+            dgDatos.ItemsSource = gastosPorCategoria
+                .OrderByDescending(x => x.Total)
+                .Select(x => new
+                {
+                    Categoria = x.Categoria,
+                    Total = $"${x.Total:F2}",
+                    Porcentaje = totalGastos > 0 ? $"{(x.Total / totalGastos) * 100:F1}%" : "0%"
+                })
+                .ToList();
         }
 
         private async void BtnResumenMensual_Click(object sender, RoutedEventArgs e)
@@ -74,21 +74,22 @@ namespace FinanzasPersonales.NET.Views
             if (!resumenMensual.Any())
             {
                 txtMensaje.Text = "No hay datos mensuales disponibles.";
+                LimpiarTabla();
                 return;
             }
 
-            var sb = new StringBuilder();
-            sb.AppendLine("=== RESUMEN MENSUAL (últimos 6 meses) ===");
-            sb.AppendLine();
-
-            foreach (var (mes, anio, ingresos, gastos) in resumenMensual.TakeLast(6))
-            {
-                var balanceMensual = ingresos - gastos;
-                var nombreMes = new DateTime(anio, mes, 1).ToString("MMM/yyyy");
-                sb.AppendLine($"{nombreMes}: Ingresos ${ingresos:F2} | Gastos ${gastos:F2} | Balance ${balanceMensual:F2}");
-            }
-
-            MessageBox.Show(sb.ToString(), "Resumen Mensual");
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = "Resumen mensual";
+            dgDatos.ItemsSource = resumenMensual
+                .TakeLast(6)
+                .Select(r => new
+                {
+                    Mes = new DateTime(r.Anio, r.Mes, 1).ToString("MMM/yyyy"),
+                    Ingresos = $"${r.TotalIngresos:F2}",
+                    Gastos = $"${r.TotalGastos:F2}",
+                    Balance = $"${r.TotalIngresos - r.TotalGastos:F2}"
+                })
+                .ToList();
         }
 
         private async void BtnVerTodo_Click(object sender, RoutedEventArgs e)
@@ -102,46 +103,32 @@ namespace FinanzasPersonales.NET.Views
             var gastosPorCategoria = await _controller.GetGastosPorCategoriaAsync();
             var resumenMensual = await _controller.GetResumenMensualAsync();
 
-            var sb = new StringBuilder();
-
-            sb.AppendLine("=== RESUMEN GENERAL ===");
-            sb.AppendLine($"Total ingresos:    ${totalIngresos:F2}");
-            sb.AppendLine($"Total gastos:      ${totalGastos:F2}");
-            sb.AppendLine($"Balance:           ${balance:F2}");
-            sb.AppendLine($"Prom. ingresos:    ${promedioIngresos:F2}");
-            sb.AppendLine($"Prom. gastos:      ${promedioGastos:F2}");
-            sb.AppendLine($"Total movimientos: {totalMovimientos}");
-
-            if (totalIngresos > 0)
+            var filas = new System.Collections.Generic.List<object>
             {
-                var porcentaje = _controller.CalcularPorcentajeGastos(totalGastos, totalIngresos);
-                sb.AppendLine($"% gastos/ingresos: {porcentaje:F1}%");
+                new { Seccion = "General", Indicador = "Total ingresos", Valor = $"${totalIngresos:F2}" },
+                new { Seccion = "General", Indicador = "Total gastos", Valor = $"${totalGastos:F2}" },
+                new { Seccion = "General", Indicador = "Balance", Valor = $"${balance:F2}" },
+                new { Seccion = "General", Indicador = "Promedio ingresos", Valor = $"${promedioIngresos:F2}" },
+                new { Seccion = "General", Indicador = "Promedio gastos", Valor = $"${promedioGastos:F2}" },
+                new { Seccion = "General", Indicador = "Movimientos totales", Valor = totalMovimientos.ToString() },
+                new { Seccion = "General", Indicador = "% gastos/ingresos", Valor = totalIngresos > 0 ? $"{_controller.CalcularPorcentajeGastos(totalGastos, totalIngresos):F1}%" : "N/A" }
+            };
+
+            foreach (var gasto in gastosPorCategoria.OrderByDescending(x => x.Total))
+            {
+                var porcentaje = totalGastos > 0 ? $"{(gasto.Total / totalGastos) * 100:F1}%" : "0%";
+                filas.Add(new { Seccion = "Categorías", Indicador = gasto.Categoria, Valor = $"${gasto.Total:F2} ({porcentaje})" });
             }
 
-            if (gastosPorCategoria.Any())
+            foreach (var resumen in resumenMensual.TakeLast(6))
             {
-                sb.AppendLine();
-                sb.AppendLine("=== GASTOS POR CATEGORÍA ===");
-                foreach (var (categoria, total) in gastosPorCategoria.OrderByDescending(x => x.Total))
-                {
-                    var porcentaje = totalGastos > 0 ? (total / totalGastos) * 100 : 0;
-                    sb.AppendLine($"{categoria}: ${total:F2} ({porcentaje:F1}%)");
-                }
+                var mes = new DateTime(resumen.Anio, resumen.Mes, 1).ToString("MMM/yyyy");
+                filas.Add(new { Seccion = "Mensual", Indicador = mes, Valor = $"+${resumen.TotalIngresos:F2} / -${resumen.TotalGastos:F2} = ${resumen.TotalIngresos - resumen.TotalGastos:F2}" });
             }
 
-            if (resumenMensual.Any())
-            {
-                sb.AppendLine();
-                sb.AppendLine("=== RESUMEN MENSUAL ===");
-                foreach (var (mes, anio, ingresos, gastos) in resumenMensual.TakeLast(6))
-                {
-                    var balanceMensual = ingresos - gastos;
-                    var nombreMes = new DateTime(anio, mes, 1).ToString("MMM/yyyy");
-                    sb.AppendLine($"{nombreMes}: +${ingresos:F2} / -${gastos:F2} = ${balanceMensual:F2}");
-                }
-            }
-
-            MessageBox.Show(sb.ToString(), "Estadísticas Completas");
+            txtMensaje.Text = string.Empty;
+            txtTablaTitulo.Text = "Estadísticas completas";
+            dgDatos.ItemsSource = filas;
         }
 
         private void BtnVerGraficas_Click(object sender, RoutedEventArgs e)
@@ -188,6 +175,12 @@ namespace FinanzasPersonales.NET.Views
                 var btn = sender as System.Windows.Controls.Button;
                 if (btn != null) btn.IsEnabled = true;
             }
+        }
+
+        private void LimpiarTabla()
+        {
+            txtTablaTitulo.Text = string.Empty;
+            dgDatos.ItemsSource = null;
         }
     }
 }
