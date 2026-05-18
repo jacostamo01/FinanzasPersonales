@@ -22,7 +22,7 @@ namespace FinanzasPersonales.NET.Views
         {
             foreach (var categoria in CategoriaGasto.ObtenerCategorias())
             {
-                // Encabezado de categoría padre (no seleccionable)
+                
                 var encabezado = new ComboBoxItem
                 {
                     Content = $"── {categoria.Nombre} ──",
@@ -31,7 +31,7 @@ namespace FinanzasPersonales.NET.Views
                 };
                 cmbCategoria.Items.Add(encabezado);
 
-                // Subcategorías seleccionables
+                
                 foreach (var sub in categoria.Subcategorias)
                 {
                     var item = new ComboBoxItem
