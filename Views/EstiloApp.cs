@@ -2,9 +2,6 @@ using System;
 
 namespace FinanzasPersonales.NET.Views
 {
-    /// <summary>
-    /// Clase para manejar el estilo y presentación de la aplicación de consola.
-    /// </summary>
     public static class EstiloApp
     {
         public static void MostrarTitulo(string titulo)

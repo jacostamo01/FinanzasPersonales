@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Views
 {
-    /// <summary>
-    /// Vista para manejo de ahorros.
-    /// </summary>
     public class AhorroView
     {
         private readonly AhorroController _controller;
@@ -160,7 +157,6 @@ namespace FinanzasPersonales.NET.Views
                 return;
             }
 
-            // Mostrar ahorros disponibles
             Console.WriteLine("Metas de ahorro disponibles:");
             foreach (var ahorro in ahorros.Where(a => !a.ObjetivoAlcanzado))
             {
@@ -219,7 +215,6 @@ namespace FinanzasPersonales.NET.Views
                 return;
             }
 
-            // Mostrar ahorros con dinero
             Console.WriteLine("Metas de ahorro con fondos:");
             var ahorrosConFondos = ahorros.Where(a => a.MontoActual > 0).ToList();
 

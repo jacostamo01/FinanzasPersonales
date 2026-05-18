@@ -154,8 +154,7 @@ namespace FinanzasPersonales.NET.Views
                 }
 
                 txtMensaje.Text = "Enviando correo, por favor espera...";
-                
-                // Deshabilitar botón para evitar envíos dobles
+
                 var btn = sender as System.Windows.Controls.Button;
                 if (btn != null) btn.IsEnabled = false;
 

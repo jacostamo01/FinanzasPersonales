@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Controllers
 {
-    /// <summary>
-    /// Controlador del módulo de inversiones. Conecta la Vista con el Servicio.
-    /// </summary>
     public class InversionController
     {
         private readonly InversionService _inversionService;

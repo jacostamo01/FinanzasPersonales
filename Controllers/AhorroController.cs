@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Controllers
 {
-    /// <summary>
-    /// Controlador del módulo de ahorros. Conecta la Vista con el Servicio.
-    /// </summary>
     public class AhorroController
     {
         private readonly AhorroService _ahorroService;

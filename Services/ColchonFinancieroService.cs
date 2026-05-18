@@ -19,14 +19,13 @@ namespace FinanzasPersonales.NET.Services
             _movimientoService = movimientoService;
         }
 
-        public async Task<bool> CrearColchonAsync(int usuarioId, double meta, double porcentajeAhorro)
+        public async Task<bool> CrearColchonAsync(int usuarioId, double meta)
         {
             if (meta <= 0) return false;
-            if (porcentajeAhorro < 0 || porcentajeAhorro > 100) return false;
 
             try
             {
-                var colchon = new ColchonFinanciero(meta, porcentajeAhorro)
+                var colchon = new ColchonFinanciero(meta)
                 {
                     UsuarioId = usuarioId
                 };

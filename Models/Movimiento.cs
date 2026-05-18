@@ -3,9 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FinanzasPersonales.NET.Models
 {
-    /// <summary>
-    /// Clase abstracta que representa un movimiento financiero (ingreso o gasto).
-    /// </summary>
     public abstract class Movimiento
     {
         [Key]
@@ -19,13 +16,10 @@ namespace FinanzasPersonales.NET.Models
 
         public DateTime Fecha { get; set; } = DateTime.Now;
 
-        // Relación con Usuario
         public int? UsuarioId { get; set; }
 
-        // Constructor sin parámetros para Entity Framework
         public Movimiento() { }
 
-        // Constructor con parámetros
         public Movimiento(double monto, string descripcion)
         {
             this.Monto = monto;
@@ -33,7 +27,6 @@ namespace FinanzasPersonales.NET.Models
             this.Fecha = DateTime.Now;
         }
 
-        // Método abstracto
         public abstract string GetTipo();
     }
 }

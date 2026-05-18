@@ -16,12 +16,12 @@ namespace FinanzasPersonales.NET.Controllers
             _usuarioId = usuarioId;
         }
 
-        public async Task<bool> CrearColchonAsync(double meta, double porcentajeAhorro)
+        public async Task<bool> CrearColchonAsync(double meta)
         {
-            if (meta <= 0 || porcentajeAhorro < 0 || porcentajeAhorro > 100)
+            if (meta <= 0)
                 return false;
 
-            return await _colchonService.CrearColchonAsync(_usuarioId, meta, porcentajeAhorro);
+            return await _colchonService.CrearColchonAsync(_usuarioId, meta);
         }
 
         public async Task<ColchonFinanciero?> ObtenerColchonAsync()

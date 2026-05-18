@@ -23,7 +23,6 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Gráfico de Pastel: Gastos por Categoría -->
             <StackPanel Grid.Column="0" Margin="10">
                 <TextBlock Text="Gastos por Categoría" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
                 <lvc:PieChart Series="{Binding SeriesPastel}" 
@@ -31,7 +30,6 @@
                               LegendPosition="Right"/>
             </StackPanel>
 
-            <!-- Gráfico de Barras: Histórico de Ingresos y Gastos -->
             <StackPanel Grid.Column="1" Margin="10">
                 <TextBlock Text="Ingresos vs Gastos (Últimos 6 Meses)" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
                 <lvc:CartesianChart Series="{Binding SeriesBarras}" 

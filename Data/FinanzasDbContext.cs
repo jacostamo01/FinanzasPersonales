@@ -9,7 +9,6 @@ namespace FinanzasPersonales.NET.Data
         {
         }
 
-        // entidades
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Ingreso> Ingresos { get; set; }
         public DbSet<Gasto> Gastos { get; set; }
@@ -21,7 +20,6 @@ namespace FinanzasPersonales.NET.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            //Usuario 
             modelBuilder.Entity<Usuario>(entity =>
             {
                 entity.ToTable("usuarios"); 
@@ -34,7 +32,6 @@ namespace FinanzasPersonales.NET.Data
                 entity.HasIndex(u => u.Username).IsUnique();
             });
 
-            //  Ingreso
             modelBuilder.Entity<Ingreso>(entity =>
             {
                 entity.ToTable("ingresos");
@@ -46,7 +43,6 @@ namespace FinanzasPersonales.NET.Data
                 entity.Property(i => i.UsuarioId).HasColumnName("usuario_id");
             });
 
-            //  Gasto
             modelBuilder.Entity<Gasto>(entity =>
             {
                 entity.ToTable("gastos");
@@ -59,7 +55,6 @@ namespace FinanzasPersonales.NET.Data
                 entity.Property(g => g.UsuarioId).HasColumnName("usuario_id");
             });
 
-            //  Ahorro
             modelBuilder.Entity<Ahorro>(entity =>
             {
                 entity.ToTable("ahorros");
@@ -73,7 +68,6 @@ namespace FinanzasPersonales.NET.Data
                 entity.Property(a => a.UsuarioId).HasColumnName("usuario_id");
             });
 
-            //  Inversion
             modelBuilder.Entity<Inversion>(entity =>
             {
                 entity.ToTable("inversiones");
@@ -88,10 +82,9 @@ namespace FinanzasPersonales.NET.Data
                 entity.Property(i => i.UsuarioId).HasColumnName("usuario_id");
             });
 
-            // Colchon financiero
             modelBuilder.Entity<ColchonFinanciero>(entity =>
             {
-                entity.ToTable("colchones_financieros");
+                entity.ToTable("colchon_financiero");
                 entity.HasKey(c => c.Id);
                 entity.Property(c => c.Id).HasColumnName("id");
                 entity.Property(c => c.UsuarioId).HasColumnName("usuario_id");

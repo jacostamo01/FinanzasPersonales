@@ -30,7 +30,6 @@ namespace FinanzasPersonales.NET.Views
                     MontoActual = $"${c.MontoActual:F2}",
                     Meta = $"${c.Meta:F2}",
                     PorcentajeAhorro = $"{c.PorcentajeAhorro:F1}%",
-                    Progreso = $"{c.GetPorcentajeProgreso():F1}%",
                     Estado = c.MetaAlcanzada ? "Completado" : "En progreso",
                     FechaCreacion = c.FechaCreacion.ToString("dd/MM/yyyy")
                 }).ToList();
@@ -47,14 +46,13 @@ namespace FinanzasPersonales.NET.Views
 
         private async void BtnCrear_Click(object sender, RoutedEventArgs e)
         {
-            if (!double.TryParse(TxtMeta.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double meta) ||
-                !double.TryParse(TxtPorcentaje.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double porcentaje))
+            if (!double.TryParse(TxtMeta.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double meta))
             {
-                MessageBox.Show("Ingrese una meta y un porcentaje validos.");
+                MessageBox.Show("Ingrese un monto meta válido.");
                 return;
             }
 
-            bool creado = await _controller.CrearColchonAsync(meta, porcentaje);
+            bool creado = await _controller.CrearColchonAsync(meta);
 
             MessageBox.Show(creado
                 ? "Colchon financiero creado correctamente."
@@ -63,7 +61,6 @@ namespace FinanzasPersonales.NET.Views
             if (creado)
             {
                 TxtMeta.Clear();
-                TxtPorcentaje.Clear();
             }
 
             CargarColchones();
@@ -77,7 +74,7 @@ namespace FinanzasPersonales.NET.Views
                 return;
             }
 
-            if (!double.TryParse(TxtMonto.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double monto) || monto <= 0)
+            if (!double.TryParse(TxtMontoOperacion.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double monto) || monto <= 0)
             {
                 MessageBox.Show("Ingrese un monto valido.");
                 return;
@@ -98,7 +95,7 @@ namespace FinanzasPersonales.NET.Views
 
             if (depositado)
             {
-                TxtMonto.Clear();
+                TxtMontoOperacion.Clear();
             }
 
             CargarColchones();
@@ -112,7 +109,7 @@ namespace FinanzasPersonales.NET.Views
                 return;
             }
 
-            if (!double.TryParse(TxtMonto.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double monto) || monto <= 0)
+            if (!double.TryParse(TxtMontoOperacion.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double monto) || monto <= 0)
             {
                 MessageBox.Show("Ingrese un monto valido.");
                 return;
@@ -126,7 +123,7 @@ namespace FinanzasPersonales.NET.Views
 
             if (retirado)
             {
-                TxtMonto.Clear();
+                TxtMontoOperacion.Clear();
             }
 
             CargarColchones();

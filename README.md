@@ -4,13 +4,13 @@
 Aplicación de consola para gestión de finanzas personales desarrollada en .NET 8.0 con Entity Framework Core y SQLite.
 
 ## Características
-- ✅ **Gestión de Usuarios**: Registro e inicio de sesión con autenticación
-- ✅ **Movimientos Financieros**: Registro de ingresos y gastos con categorización
-- ✅ **Metas de Ahorro**: Crear y gestionar objetivos de ahorro
-- ✅ **Inversiones**: Simulación de inversiones con cálculo de rendimientos
-- ✅ **Estadísticas**: Resúmenes financieros y análisis por categorías
-- ✅ **Base de Datos**: Persistencia con SQLite y Entity Framework Core
-- ✅ **Interfaz Intuitiva**: Menús de consola coloridos y fáciles de usar
+-  **Gestión de Usuarios**: Registro e inicio de sesión con autenticación
+-  **Movimientos Financieros**: Registro de ingresos y gastos con categorización
+-  **Metas de Ahorro**: Crear y gestionar objetivos de ahorro
+-  **Inversiones**: Simulación de inversiones con cálculo de rendimientos
+-  **Estadísticas**: Resúmenes financieros y análisis por categorías
+-  **Base de Datos**: Persistencia con SQLite y Entity Framework Core
+-  **Interfaz Intuitiva**: Menús de consola coloridos y fáciles de usar
 
 ## Arquitectura
 El proyecto sigue el patrón MVC (Model-View-Controller) con inyección de dependencias:
@@ -129,7 +129,4 @@ FinanzasPersonales.NET/
 - [ ] Múltiples cuentas bancarias
 
 ## Autor
-Migrado a .NET con GitHub Copilot
-
----
-**¡Empieza a gestionar tus finanzas personales de manera efectiva!** 💰📊
+Andres Cely

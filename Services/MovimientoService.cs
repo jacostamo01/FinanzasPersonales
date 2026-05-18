@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Services
 {
-    /// <summary>
-    /// Servicio para movimientos (ingresos y gastos). Maneja la lógica y la conexión a BD.
-    /// </summary>
     public class MovimientoService
     {
         private readonly FinanzasDbContext _context;

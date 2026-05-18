@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Services
 {
-    /// <summary>
-    /// Servicio para el módulo de inversiones. Maneja la lógica de inversiones.
-    /// </summary>
     public class InversionService
     {
         private readonly FinanzasDbContext _context;

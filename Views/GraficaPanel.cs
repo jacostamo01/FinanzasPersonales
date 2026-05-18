@@ -2,7 +2,6 @@ using System;
 
 namespace FinanzasPersonales.NET.Views
 {
-    //mostrar graficas aun no stan implementadad
     public class GraficaPanel
     {
         public void MostrarGrafica()

@@ -33,12 +33,9 @@ namespace FinanzasPersonales.NET.Services
 
         public EmailService()
         {
-            // Leer configuración desde appsettings.json
             var basePath = AppDomain.CurrentDomain.BaseDirectory;
-            // Generalmente en WPF, el appsettings.json debe copiarse al directorio de salida
             var settingsPath = Path.Combine(basePath, "appsettings.json");
             
-            // Si no está en bin/Debug, intentamos buscarlo en la raíz del proyecto para desarrollo
             if (!File.Exists(settingsPath))
             {
                 settingsPath = Path.Combine(basePath, "..", "..", "..", "appsettings.json");

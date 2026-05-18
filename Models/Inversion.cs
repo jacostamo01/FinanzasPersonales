@@ -3,9 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FinanzasPersonales.NET.Models
 {
-    /// <summary>
-    /// Representa una inversión financiera.
-    /// </summary>
     public class Inversion
     {
         [Key]
@@ -26,16 +23,13 @@ namespace FinanzasPersonales.NET.Models
 
         public DateTime? FechaVencimiento { get; set; }
 
-        // Relación con Usuario
         public int? UsuarioId { get; set; }
 
-        // Constructor sin parámetros para Entity Framework
         public Inversion() 
         {
             FechaInicio = DateTime.Now;
         }
 
-        // Constructor con parámetros
         public Inversion(double montoInicial, double tasaInteres, string descripcion, DateTime? fechaVencimiento = null)
         {
             MontoInicial = montoInicial;
@@ -46,34 +40,29 @@ namespace FinanzasPersonales.NET.Models
             FechaVencimiento = fechaVencimiento;
         }
 
-        // Calcula la ganancia con interés simple
         public double CalcularGananciaSimple()
         {
             var tiempoEnAnios = (DateTime.Now - FechaInicio).Days / 365.0;
             return MontoInicial * TasaInteres * tiempoEnAnios;
         }
 
-        // Calcula la ganancia con interés compuesto
         public double CalcularGananciaCompuesta()
         {
             var tiempoEnAnios = (DateTime.Now - FechaInicio).Days / 365.0;
             return MontoInicial * Math.Pow(1 + TasaInteres, tiempoEnAnios) - MontoInicial;
         }
 
-        // Calcula el valor total actual con interés compuesto
         public double CalcularValorActual()
         {
             var tiempoEnAnios = (DateTime.Now - FechaInicio).Days / 365.0;
             return MontoInicial * Math.Pow(1 + TasaInteres, tiempoEnAnios);
         }
 
-        // Actualiza el valor actual de la inversión
         public void ActualizarValor()
         {
             ValorActual = CalcularValorActual();
         }
 
-        // Calcula el rendimiento porcentual
         public double GetRendimientoPorcentual()
         {
             if (MontoInicial <= 0) return 0;

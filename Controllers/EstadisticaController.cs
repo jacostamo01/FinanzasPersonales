@@ -8,9 +8,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Controllers
 {
-    /// <summary>
-    /// Controlador del módulo de estadísticas. Conecta la Vista con el Servicio.
-    /// </summary>
     public class EstadisticaController
     {
         private readonly EstadisticaService _estadisticaService;

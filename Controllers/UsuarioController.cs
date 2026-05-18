@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Controllers
 {
-    //conytrolamos usuario y autent
     public class UsuarioController
     {
         private readonly UsuarioService _usuarioService;
@@ -16,7 +15,6 @@ namespace FinanzasPersonales.NET.Controllers
 
         public async Task<bool> RegistrarUsuarioAsync(string username, string password, string confirmPassword)
         {
-            // Validaciones
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 return false;
 
@@ -29,7 +27,6 @@ namespace FinanzasPersonales.NET.Controllers
             if (password != confirmPassword)
                 return false;
 
-            // Verificar si el usuario ya existe
             if (await _usuarioService.ExisteUsuarioAsync(username.Trim()))
                 return false;
 

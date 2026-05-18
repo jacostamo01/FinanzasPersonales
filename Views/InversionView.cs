@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Views
 {
-    /// <summary>
-    /// Vista para manejo de inversiones.
-    /// </summary>
     public class InversionView
     {
         private readonly InversionController _controller;
@@ -144,7 +141,6 @@ namespace FinanzasPersonales.NET.Views
                 return;
             }
 
-            // Mostrar lista
             Console.WriteLine($"{"ID",-4} {"Descripción",-25} {"Monto Inicial",-15}");
             Console.WriteLine(new string('-', 45));
             foreach (var inv in inversiones)
@@ -152,7 +148,6 @@ namespace FinanzasPersonales.NET.Views
                 Console.WriteLine($"{inv.Id,-4} {inv.Descripcion,-25} ${inv.MontoInicial,12:F2}");
             }
 
-            // Pedir ID
             Console.WriteLine();
             Console.WriteLine("(Ingrese 0 para salir)");
             Console.Write("Ingrese el ID de la inversión a actualizar: ");
@@ -176,7 +171,6 @@ namespace FinanzasPersonales.NET.Views
                 return;
             }
 
-            // Pedir nuevo monto
             Console.Write($"Nuevo monto inicial (actual: ${inversion.MontoInicial:F2}): $");
             if (!double.TryParse(Console.ReadLine(), NumberStyles.Any, CultureInfo.InvariantCulture, out double monto) || monto <= 0)
             {

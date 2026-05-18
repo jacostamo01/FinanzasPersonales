@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Services
 {
-    /// <summary>
-    /// Servicio para el módulo de ahorros. Valida y modifica el modelo Ahorro.
-    /// </summary>
     public class AhorroService
     {
         private readonly FinanzasDbContext _context;

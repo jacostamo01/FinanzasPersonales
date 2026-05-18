@@ -2,9 +2,6 @@
 
 namespace FinanzasPersonales.NET.Models
 {
-    /// <summary>
-    /// Representa una categoría de gasto con sus subcategorías predefinidas.
-    /// </summary>
     public class CategoriaGasto
     {
         public string Nombre { get; }
@@ -16,9 +13,6 @@ namespace FinanzasPersonales.NET.Models
             Subcategorias = new List<string>(subcategorias).AsReadOnly();
         }
 
-        /// <summary>
-        /// Devuelve las categorías de gasto predefinidas de la aplicación.
-        /// </summary>
         public static IReadOnlyList<CategoriaGasto> ObtenerCategorias()
         {
             return new List<CategoriaGasto>

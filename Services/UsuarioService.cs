@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Services
 {
-    //autenticacion
     public class UsuarioService
     {
         private readonly FinanzasDbContext _context;
@@ -19,14 +18,12 @@ namespace FinanzasPersonales.NET.Services
         {
             try
             {
-                // verifics si el usua exist
                 var usuarioExistente = await _context.Usuarios
                     .FirstOrDefaultAsync(u => u.Username == username);
 
                 if (usuarioExistente != null)
                     return false;
 
-                // Guardar contraseña 
                 var nuevoUsuario = new Usuario(username, password);
                 _context.Usuarios.Add(nuevoUsuario);
                 await _context.SaveChangesAsync();

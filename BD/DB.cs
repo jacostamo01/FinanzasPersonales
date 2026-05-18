@@ -21,15 +21,13 @@ namespace FinanzasPersonales.NET.Data
 
             try
             {
-                // Verificamos que la conexión no esté ya abierta antes de intentar abrirla
                 if (conexion.State != System.Data.ConnectionState.Open)
                 {
                     conexion.Open();
                 }
             }
-            catch (MySqlException ex) // Captura específica de errores de MySQL
+            catch (MySqlException ex)
             {
-                // Esto te ayudará a saber si es error de contraseña (1045) o de servidor caído
                 throw new Exception($"Error {ex.Number}: No se pudo conectar a finanzas_db. " + ex.Message);
             }
             catch (Exception ex)
@@ -47,7 +45,7 @@ namespace FinanzasPersonales.NET.Data
                 if (conexion != null && conexion.State != System.Data.ConnectionState.Closed)
                 {
                     conexion.Close();
-                    conexion.Dispose(); // Libera los recursos de la memoria
+                    conexion.Dispose();
                 }
             }
             catch (Exception ex)

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Controllers
 {
-    //ingr y gastos
     public class MovimientoController
     {
         private readonly MovimientoService _movimientoService;

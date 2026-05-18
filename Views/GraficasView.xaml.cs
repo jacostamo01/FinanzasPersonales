@@ -98,7 +98,6 @@ namespace FinanzasPersonales.NET.Views
                 return;
             }
 
-            // Tomar máximo los últimos 6 meses
             var ultimosMeses = historial.TakeLast(6).ToList();
             
             var valoresIngresos = new double[ultimosMeses.Count];

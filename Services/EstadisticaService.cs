@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Services
 {
-    /// <summary>
-    /// Servicio para cálculos de estadísticas financieras.
-    /// </summary>
     public class EstadisticaService
     {
         private readonly FinanzasDbContext _context;
@@ -110,9 +107,6 @@ namespace FinanzasPersonales.NET.Services
         }
     }
 
-    /// <summary>
-    /// Clase auxiliar para cálculos básicos.
-    /// </summary>
     public class Calculadora
     {
         public double Sumar(double a, double b) => a + b;

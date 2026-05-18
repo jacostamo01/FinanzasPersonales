@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 
 namespace FinanzasPersonales.NET.Views
 {
-    /// <summary>
-    /// Vista para mostrar estadísticas financieras.
-    /// </summary>
     public class EstadisticaView
     {
         private readonly EstadisticaController _controller;
@@ -22,7 +19,6 @@ namespace FinanzasPersonales.NET.Views
             Console.Clear();
             EstiloApp.MostrarTitulo("=== ESTADÍSTICAS FINANCIERAS ===");
 
-            // Obtener datos generales
             var totalIngresos = await _controller.GetTotalIngresosAsync();
             var totalGastos = await _controller.GetTotalGastosAsync();
             var balance = await _controller.GetBalanceAsync();
@@ -30,7 +26,6 @@ namespace FinanzasPersonales.NET.Views
             var promedioGastos = await _controller.GetPromedioGastosAsync();
             var totalMovimientos = await _controller.ContarMovimientosAsync();
 
-            // Mostrar estadísticas generales
             EstiloApp.MostrarSubtitulo("RESUMEN GENERAL");
             Console.WriteLine($"Total de ingresos:     ${totalIngresos:F2}");
             Console.WriteLine($"Total de gastos:       ${totalGastos:F2}");
@@ -47,7 +42,6 @@ namespace FinanzasPersonales.NET.Views
 
             Console.WriteLine();
 
-            // Mostrar gastos por categoría
             EstiloApp.MostrarSubtitulo("GASTOS POR CATEGORÍA");
             var gastosPorCategoria = await _controller.GetGastosPorCategoriaAsync();
 
@@ -69,7 +63,6 @@ namespace FinanzasPersonales.NET.Views
 
             Console.WriteLine();
 
-            // Mostrar resumen mensual
             EstiloApp.MostrarSubtitulo("RESUMEN MENSUAL");
             var resumenMensual = await _controller.GetResumenMensualAsync();
 
@@ -78,7 +71,7 @@ namespace FinanzasPersonales.NET.Views
                 Console.WriteLine($"{"Mes/Año",-10} {"Ingresos",-12} {"Gastos",-12} {"Balance",-12}");
                 Console.WriteLine(new string('-', 50));
 
-                foreach (var (mes, anio, ingresos, gastos) in resumenMensual.TakeLast(6)) // Últimos 6 meses
+                foreach (var (mes, anio, ingresos, gastos) in resumenMensual.TakeLast(6))
                 {
                     var balanceMensual = ingresos - gastos;
                     var nombreMes = new DateTime(anio, mes, 1).ToString("MMM/yyyy");

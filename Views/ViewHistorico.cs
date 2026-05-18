@@ -2,9 +2,6 @@ using System;
 
 namespace FinanzasPersonales.NET.Views
 {
-    /// <summary>
-    /// Vista para mostrar histórico de movimientos (funcionalidad futura).
-    /// </summary>
     public class ViewHistorico
     {
         public void MostrarHistorico()

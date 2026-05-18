@@ -32,7 +32,6 @@ namespace FinanzasPersonales.NET
 
                 _context = new FinanzasDbContext(options);
 
-                // Crea las tablas si no existen. La base de datos finanzas_db debe existir en MariaDB/MySQL.
                 _context.Database.EnsureCreated();
 
                 var usuarioService = new UsuarioService(_context);

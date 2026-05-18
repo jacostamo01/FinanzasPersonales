@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinanzasPersonales.NET.Models
 {
-    //usuar en db
     public class Usuario
     {
         [Key]
@@ -20,11 +19,8 @@ namespace FinanzasPersonales.NET.Models
 
         [NotMapped] 
         public DateTime FechaCreacion { get; set; } = DateTime.Now;
-
-        
         public Usuario() { }
 
-        
         public Usuario(string username, string password)
         {
             Username = username;
@@ -32,7 +28,6 @@ namespace FinanzasPersonales.NET.Models
             FechaCreacion = DateTime.Now;
         }
 
-        // validar contraseña
         public bool ValidarPassword(string password)
         {
             return Password == password;
