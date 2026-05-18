@@ -35,12 +35,14 @@ namespace FinanzasPersonales.NET.Views
                     var ahorroService = new AhorroService(_context, movimientoService);
                     var estadisticaService = new EstadisticaService(_context);
                     var inversionService = new InversionService(_context);
+                    var colchonFinancieroService = new ColchonFinancieroService(_context, movimientoService);
 
                     var menuPrincipal = new ViewMenuPrincipal(
                         new MovimientoController(movimientoService, usuario.Id),
                         new AhorroController(ahorroService, usuario.Id),
                         new EstadisticaController(estadisticaService, usuario.Id),
                         new InversionController(inversionService, usuario.Id),
+                        new ColchonFinancieroController(colchonFinancieroService, usuario.Id),
                         usuario);
                     menuPrincipal.Show();
                     Close();

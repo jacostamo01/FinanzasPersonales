@@ -1,0 +1,137 @@
+<Window x:Class="FinanzasPersonales.NET.Views.ColchonFinancieroView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Colchon Financiero"
+        Height="560"
+        Width="920"
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F6F8">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Colchon Financiero"
+                   FontSize="28"
+                   FontWeight="Bold"
+                   Foreground="#1F2937"
+                   Margin="0,0,0,20"/>
+
+        <Border Grid.Row="1"
+                Background="White"
+                CornerRadius="8"
+                Padding="20"
+                Margin="0,0,0,20">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                    <TextBlock Text="Meta del colchon"/>
+                    <TextBox x:Name="TxtMeta"
+                             Height="35"
+                             Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="0,0,15,0">
+                    <TextBlock Text="Porcentaje de ahorro"/>
+                    <TextBox x:Name="TxtPorcentaje"
+                             Height="35"
+                             Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Margin="0,0,15,0">
+                    <TextBlock Text="Monto"/>
+                    <TextBox x:Name="TxtMonto"
+                             Height="35"
+                             Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="3"
+                            VerticalAlignment="Bottom"
+                            Orientation="Horizontal">
+
+                    <Button Content="Crear"
+                            Width="90"
+                            Height="35"
+                            Margin="0,0,8,0"
+                            Click="BtnCrear_Click"/>
+
+                    <Button Content="Depositar"
+                            Width="90"
+                            Height="35"
+                            Margin="0,0,8,0"
+                            Click="BtnDepositar_Click"/>
+
+                    <Button Content="Retirar"
+                            Width="90"
+                            Height="35"
+                            Click="BtnRetirar_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2"
+                Background="White"
+                CornerRadius="8"
+                Padding="15">
+
+            <DataGrid x:Name="DgColchones"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single">
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID"
+                                        Binding="{Binding Id}"
+                                        Width="60"/>
+
+                    <DataGridTextColumn Header="Usuario"
+                                        Binding="{Binding UsuarioId}"
+                                        Width="90"/>
+
+                    <DataGridTextColumn Header="Monto actual"
+                                        Binding="{Binding MontoActual}"
+                                        Width="140"/>
+
+                    <DataGridTextColumn Header="Meta"
+                                        Binding="{Binding Meta}"
+                                        Width="140"/>
+
+                    <DataGridTextColumn Header="% Ahorro"
+                                        Binding="{Binding PorcentajeAhorro}"
+                                        Width="110"/>
+
+                    <DataGridTextColumn Header="Progreso"
+                                        Binding="{Binding Progreso}"
+                                        Width="100"/>
+
+                    <DataGridTextColumn Header="Estado"
+                                        Binding="{Binding Estado}"
+                                        Width="120"/>
+
+                    <DataGridTextColumn Header="Fecha creacion"
+                                        Binding="{Binding FechaCreacion}"
+                                        Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <Button Grid.Row="3"
+                Content="Volver"
+                Width="110"
+                Height="35"
+                HorizontalAlignment="Right"
+                Margin="0,16,0,0"
+                Click="BtnVolver_Click"/>
+    </Grid>
+</Window>

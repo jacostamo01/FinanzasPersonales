@@ -34,6 +34,7 @@ namespace FinanzasPersonales.NET
 
                 // Crea las tablas si no existen. La base de datos finanzas_db debe existir en MariaDB/MySQL.
                 _context.Database.EnsureCreated();
+                CrearTablaColchonFinancieroSiNoExiste(_context);
 
                 var usuarioService = new UsuarioService(_context);
                 var usuarioController = new UsuarioController(usuarioService);
@@ -60,6 +61,20 @@ namespace FinanzasPersonales.NET
         {
             _context?.Dispose();
             base.OnExit(e);
+        }
+
+        private static void CrearTablaColchonFinancieroSiNoExiste(FinanzasDbContext context)
+        {
+            context.Database.ExecuteSqlRaw(@"
+                CREATE TABLE IF NOT EXISTS colchones_financieros (
+                    id INT NOT NULL AUTO_INCREMENT,
+                    usuario_id INT NULL,
+                    monto_actual DOUBLE NOT NULL DEFAULT 0,
+                    meta DOUBLE NOT NULL,
+                    porcentaje_ahorro DOUBLE NOT NULL,
+                    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (id)
+                );");
         }
     }
 }

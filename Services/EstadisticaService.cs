@@ -1,6 +1,7 @@
 using FinanzasPersonales.NET.Models;
 using FinanzasPersonales.NET.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -71,7 +72,7 @@ namespace FinanzasPersonales.NET.Services
                 .Where(g => g.UsuarioId == usuarioId)
                 .GroupBy(g => g.Categoria)
                 .Select(group => new ValueTuple<string, double>(
-                    group.Key ?? "Sin categoría", 
+                    group.Key ?? "Sin categoría",
                     group.Sum(g => g.Monto)))
                 .ToListAsync();
         }
